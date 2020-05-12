@@ -15,13 +15,13 @@ import java.util.Map;
 public class Server extends NetworkInterface {
 
     private final Thread thread;
-    private static boolean running;
+    private boolean running;
 
     private static final int BUFFER_SIZE = 10000;
     private static byte[] buffer;
 
-    private static final List<Byte> allClientId = new ArrayList<>();    //for checking
-    private static final List<ClientEntity> allClients = new ArrayList<>();
+    private final List<Byte> allClientId = new ArrayList<>();    //for checking
+    private final List<ClientEntity> allClients = new ArrayList<>();
 
     public Server(int PORT) throws SocketException {
         super(PORT);
@@ -78,6 +78,10 @@ public class Server extends NetworkInterface {
                 e.printStackTrace();
             }
         };
+    }
+
+    public List<ClientEntity> getAllClients() {
+        return allClients;
     }
 
     @Override

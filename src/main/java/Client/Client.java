@@ -64,11 +64,10 @@ public class Client extends NetworkInterface {
 
     private Runnable runExecutor() {
         return () -> {
-
             ClientInfo<String[]> osInfoClient = () -> new String[]
                     {System.getProperty("os.name"),
                     System.getProperty("os.version"),
-                    System.getProperty("os.vender"),
+                    System.getProperty("os.vendor"),
                     System.getProperty("os.architecture"),
                     System.getProperty("user.name")};
 

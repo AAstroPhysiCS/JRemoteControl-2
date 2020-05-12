@@ -39,6 +39,10 @@ public abstract class NetworkInterface implements IConnectable, Disposeable {
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
+        initFeatures();
+    }
+
+    private void initFeatures(){
         if (supportedFeatures.size() == 0) {
             supportedFeatures.add(CameraCapture.getInstance(0));
             supportedFeatures.add(CMDControl.getInstance());
@@ -46,7 +50,6 @@ public abstract class NetworkInterface implements IConnectable, Disposeable {
             supportedFeatures.add(DesktopCapture.getInstance());
         }
     }
-
 
     protected byte[] receive(final int length) throws IOException {
         byte[] buffer = new byte[length];

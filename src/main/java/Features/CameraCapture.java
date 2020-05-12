@@ -23,10 +23,15 @@ public class CameraCapture extends Feature {
 
     private Mat cam_Mat;
     private static VideoCapture videoCapture;
+    private final int index;
 
     CameraCapture(String name, final int index) {
         super(name);
+        this.index = index;
         videoCapture = new VideoCapture();
+    }
+
+    private void open(){
         boolean success = videoCapture.open(index);
         if(!success) throw new InternalError("Camera could not be opened!");
     }
@@ -54,7 +59,8 @@ public class CameraCapture extends Feature {
 
     @Override
     public void disposeAll() {
-        cam_Mat.release();
+        if(cam_Mat != null)
+            cam_Mat.release();
         videoCapture.release();
     }
 }
