@@ -55,7 +55,7 @@ public class Client extends NetworkInterface {
             }
             threadExecutor.start();
             try {
-                Thread.currentThread().join();
+                threadListener.join();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -91,6 +91,11 @@ public class Client extends NetworkInterface {
                     e.printStackTrace();
                 }
             }
+            try {
+                threadExecutor.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         };
     }
 
@@ -99,12 +104,6 @@ public class Client extends NetworkInterface {
         running = false;
         connectedToServer = false;
         super.disposeAll();
-        try {
-            threadListener.join();
-            threadExecutor.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         socket.disconnect();
         socket.close();
     }

@@ -72,6 +72,11 @@ public class Server extends NetworkInterface {
                     e.printStackTrace();
                 }
             }
+            try {
+                thread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         };
     }
 
@@ -79,11 +84,6 @@ public class Server extends NetworkInterface {
     public void disposeAll() {
         running = false;
         super.disposeAll();
-        try {
-            thread.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         socket.disconnect();
         socket.close();
     }

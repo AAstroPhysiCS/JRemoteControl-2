@@ -1,74 +1,31 @@
 package Server.Overlay;
 
-import Server.Overlay.Node.OSInfoNode;
+import Server.ClientEntity.ClientEntity;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
 
-import java.net.URL;
-import java.util.ResourceBundle;
-
-public class Controller implements Initializable {
+public abstract class Controller implements Initializable {
+    @FXML
+    protected ImageView desktopCaptureImageView, cameraCaptureImageView;
 
     @FXML
-    private ImageView desktopCaptureImageView, cameraCaptureImageView;
+    protected Slider volumeSlider;
 
     @FXML
-    private Slider volumeSlider;
+    protected TextArea textAreaControl;
 
     @FXML
-    private TextArea cmdTextArea;
+    protected CheckBox desktopCaptureButton, cameraCaptureButton, audioCaptureButton, textControlButton;
 
     @FXML
-    private TextField cmdTextField;
+    protected TextField textFieldControl;
 
     @FXML
-    private CheckBox desktopCaptureButton, cameraCaptureButton, audioCaptureButton, cmdCaptureButton;
+    protected AnchorPane desktopCapturePane, cameraCapturePane, audioCapturePane, textControlPane, controlPane;
 
     @FXML
-    private ListView<OSInfoNode> listOfConnectableView;
-
-    @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {}
-
-    public CheckBox getAudioCaptureButton() {
-        return audioCaptureButton;
-    }
-
-    public CheckBox getCameraCaptureButton() {
-        return cameraCaptureButton;
-    }
-
-    public CheckBox getCmdCaptureButton() {
-        return cmdCaptureButton;
-    }
-
-    public CheckBox getDesktopCaptureButton() {
-        return desktopCaptureButton;
-    }
-
-    public ImageView getCameraCaptureImageView() {
-        return cameraCaptureImageView;
-    }
-
-    public ImageView getDesktopCaptureImageView() {
-        return desktopCaptureImageView;
-    }
-
-    public Slider getVolumeSlider() {
-        return volumeSlider;
-    }
-
-    public TextArea getCmdTextArea() {
-        return cmdTextArea;
-    }
-
-    public TextField getCmdTextField() {
-        return cmdTextField;
-    }
-
-    public ListView<OSInfoNode> getListOfConnectableView() {
-        return listOfConnectableView;
-    }
+    protected ListView<ClientEntity> listOfConnectableView;
 }

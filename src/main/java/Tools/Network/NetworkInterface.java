@@ -24,7 +24,7 @@ public abstract class NetworkInterface implements IConnectable, Disposeable {
     //not using enum because i need to eventually send bytes
     public static class CommandByte {
         public static final byte START_BYTE = (byte)0x000001;
-        public static final byte WEBCAM_BYTE = (byte)0x000002;
+        public static final byte CAMERA_BYTE = (byte)0x000002;
         public static final byte CMDCONTROL_BYTE = (byte)0x000003;
         public static final byte DESKTOPCONTROL_BYTE = (byte)0x000004;
         public static final byte AUDIOCAPTURE_BYTE = (byte)0x000005;
@@ -40,7 +40,7 @@ public abstract class NetworkInterface implements IConnectable, Disposeable {
             e.printStackTrace();
         }
         if (supportedFeatures.size() == 0) {
-            supportedFeatures.add(WebcamCapture.getInstance(0));
+            supportedFeatures.add(CameraCapture.getInstance(0));
             supportedFeatures.add(CMDControl.getInstance());
             supportedFeatures.add(AudioCapture.getInstance());
             supportedFeatures.add(DesktopCapture.getInstance());

@@ -7,27 +7,28 @@ import org.opencv.videoio.VideoCapture;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 
-public class WebcamCapture extends Feature {
+public class CameraCapture extends Feature {
 
     static {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
     }
 
-    private static WebcamCapture webcamCaptureInstance;
+    private static CameraCapture cameraCaptureInstance;
 
-    public static WebcamCapture getInstance(final int index) {
-        if (webcamCaptureInstance == null)
-            webcamCaptureInstance = new WebcamCapture("Webcam Capture", index);
-        return webcamCaptureInstance;
+    public static CameraCapture getInstance(final int index) {
+        if (cameraCaptureInstance == null)
+            cameraCaptureInstance = new CameraCapture("Camera Capture", index);
+        return cameraCaptureInstance;
     }
 
     private Mat cam_Mat;
     private static VideoCapture videoCapture;
 
-    WebcamCapture(String name, final int index) {
+    CameraCapture(String name, final int index) {
         super(name);
         videoCapture = new VideoCapture();
-        videoCapture.open(index);
+        boolean success = videoCapture.open(index);
+        if(!success) throw new InternalError("Camera could not be opened!");
     }
 
     private BufferedImage convertToBufferedImage(Mat mat) {
