@@ -6,8 +6,7 @@ import java.util.ResourceBundle;
 
 public class ControllerImpl extends Controller {
 
-    ControllerImpl() {
-    }
+    ControllerImpl() {}
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {

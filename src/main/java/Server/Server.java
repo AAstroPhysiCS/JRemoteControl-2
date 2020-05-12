@@ -58,6 +58,9 @@ public class Server extends NetworkInterface {
                             buffer = receive(buffer.length, packet.getAddress(), packet.getPort());
                             if (ObjectSerialization.deseralize(buffer) instanceof Map s) { env = s;}
 
+                            send(new byte[]{CommandByte.INFO_ACHIEVED_BYTE}, 1, packet.getAddress(), packet.getPort());
+                            System.out.println("Client info achieved!");
+
                             if(env != null && info != null) {
                                 allClients.add(new ClientBuilder.ClientBuilderTemplate()
                                         .setId(buffer[1])
@@ -67,8 +70,8 @@ public class Server extends NetworkInterface {
                             }
                         }
                     }
-                    Thread.sleep(1000 / 60);
-                } catch (IOException | InterruptedException e) {
+                    sleep(1000 / 60);
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
             }

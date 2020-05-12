@@ -23,13 +23,14 @@ public abstract class NetworkInterface implements IConnectable, Disposeable {
 
     //not using enum because i need to eventually send bytes
     public static class CommandByte {
-        public static final byte START_BYTE = (byte)0x000001;
-        public static final byte CAMERA_BYTE = (byte)0x000002;
-        public static final byte CMDCONTROL_BYTE = (byte)0x000003;
-        public static final byte DESKTOPCONTROL_BYTE = (byte)0x000004;
-        public static final byte AUDIOCAPTURE_BYTE = (byte)0x000005;
-        public static final byte CAPTUREOSINFO_BYTE = (byte)0x000006;
-        public static final byte CONFIRMATION_BYTE = (byte)0x000007;
+        public static final byte START_BYTE = (byte)0x01;
+        public static final byte CAMERA_BYTE = (byte)0x02;
+        public static final byte CMDCONTROL_BYTE = (byte)0x03;
+        public static final byte DESKTOPCONTROL_BYTE = (byte)0x04;
+        public static final byte AUDIOCAPTURE_BYTE = (byte)0x05;
+        public static final byte CAPTUREOSINFO_BYTE = (byte)0x06;
+        public static final byte CONFIRMATION_BYTE = (byte)0x07;
+        public static final byte INFO_ACHIEVED_BYTE = (byte)0x08;
     }
 
     public NetworkInterface(final int PORT) {
@@ -79,6 +80,14 @@ public abstract class NetworkInterface implements IConnectable, Disposeable {
     public void disposeAll() {
         for (Feature allFeatures : supportedFeatures)
             allFeatures.disposeAll();
+    }
+
+    public void sleep(long time){
+        try {
+            Thread.sleep(time);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     public DatagramPacket getPacket() {

@@ -7,7 +7,7 @@
 
 <AnchorPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <ListView fx:id="listOfConnectableView" layoutX="26.0" layoutY="62.0" prefHeight="493.0" prefWidth="200.0" />
+      <ListView fx:id="listOfConnectableView" focusTraversable="false" layoutX="26.0" layoutY="62.0" prefHeight="493.0" prefWidth="200.0" />
       <AnchorPane fx:id="controlPane" disable="true" layoutX="237.0" layoutY="7.0" prefHeight="594.0" prefWidth="562.0">
          <children>
             <AnchorPane fx:id="desktopCapturePane" layoutX="26.0" layoutY="43.0" prefHeight="221.0" prefWidth="254.0">
