@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <ListView fx:id="listOfConnectableView" layoutX="26.0" layoutY="30.0" prefHeight="525.0" prefWidth="200.0" />
+      <AnchorPane layoutX="254.0" layoutY="293.0" prefHeight="253.0" prefWidth="254.0">
+         <children>
+            <ImageView fx:id="webcamImageView" fitHeight="195.0" fitWidth="231.0" layoutX="14.0" layoutY="52.0" pickOnBounds="true" preserveRatio="true" />
+            <CheckBox fx:id="webcamCaptureButton" layoutX="61.0" layoutY="14.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="137.0" text="Webcam Capture" />
+         </children>
+      </AnchorPane>
+      <AnchorPane layoutX="242.0" layoutY="30.0" prefHeight="253.0" prefWidth="254.0">
+         <children>
+            <CheckBox fx:id="desktopCaptureButton" layoutX="63.0" layoutY="14.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="129.0" text="Desktop Capture" />
+            <ImageView fx:id="desktopImageView" fitHeight="195.0" fitWidth="231.0" layoutX="14.0" layoutY="52.0" pickOnBounds="true" preserveRatio="true" />
+         </children></AnchorPane>
+      <AnchorPane layoutX="519.0" layoutY="30.0" prefHeight="253.0" prefWidth="254.0">
+         <children>
+            <CheckBox fx:id="audioCaptureButton" layoutX="71.0" layoutY="14.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="121.0" text="Audio Capture" />
+            <Slider fx:id="volumeSlider" layoutX="18.0" layoutY="65.0" prefHeight="14.0" prefWidth="48.0" />
+            <Label layoutX="18.0" layoutY="39.0" text="Volume" />
+         </children></AnchorPane>
+      <AnchorPane layoutX="519.0" layoutY="293.0" prefHeight="253.0" prefWidth="254.0">
+         <children>
+            <CheckBox fx:id="cmdControlButton" layoutX="71.0" layoutY="14.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="112.0" text="CMD Control" />
+            <TextField fx:id="cmdTextField" layoutX="14.0" layoutY="201.0" prefHeight="25.0" prefWidth="222.0" />
+            <TextArea fx:id="cmdTextArea" editable="false" layoutX="14.0" layoutY="55.0" prefHeight="127.0" prefWidth="222.0" />
+         </children></AnchorPane>
+   </children>
+</AnchorPane>
