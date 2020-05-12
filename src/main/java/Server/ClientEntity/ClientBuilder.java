@@ -6,7 +6,7 @@ public interface ClientBuilder {
 
     class ClientBuilderTemplate implements ClientBuilder {
 
-        private String id;
+        private byte id;
         private String[] info;
         private Map<String, String> env;
 
@@ -17,7 +17,7 @@ public interface ClientBuilder {
             return this;
         }
 
-        public ClientBuilder setId(String id) {
+        public ClientBuilder setId(byte id) {
             this.id = id;
             return this;
         }
@@ -34,7 +34,7 @@ public interface ClientBuilder {
     }
 
     ClientBuilder setEnv(Map<String, String> env);
-    ClientBuilder setId(String id);
+    ClientBuilder setId(byte id);
     ClientBuilder setInfo(String[] info);
     ClientEntity build();
 }

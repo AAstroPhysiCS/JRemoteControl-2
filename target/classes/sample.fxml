@@ -3,30 +3,56 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
 <AnchorPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <ListView fx:id="listOfConnectableView" layoutX="26.0" layoutY="30.0" prefHeight="525.0" prefWidth="200.0" />
-      <AnchorPane layoutX="254.0" layoutY="293.0" prefHeight="253.0" prefWidth="254.0">
+      <AnchorPane layoutX="242.0" layoutY="293.0" prefHeight="253.0" prefWidth="254.0">
          <children>
-            <ImageView fx:id="webcamImageView" fitHeight="195.0" fitWidth="231.0" layoutX="14.0" layoutY="52.0" pickOnBounds="true" preserveRatio="true" />
-            <CheckBox fx:id="webcamCaptureButton" layoutX="61.0" layoutY="14.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="137.0" text="Webcam Capture" />
+            <ImageView fx:id="cameraCaptureImageView" fitHeight="206.0" fitWidth="222.0" layoutX="27.0" layoutY="37.0" pickOnBounds="true" preserveRatio="true" />
+            <CheckBox fx:id="webcamCaptureButton" layoutX="61.0" layoutY="14.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="137.0" text="Webcam Capture">
+               <font>
+                  <Font size="14.0" />
+               </font></CheckBox>
          </children>
       </AnchorPane>
       <AnchorPane layoutX="242.0" layoutY="30.0" prefHeight="253.0" prefWidth="254.0">
          <children>
-            <CheckBox fx:id="desktopCaptureButton" layoutX="63.0" layoutY="14.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="129.0" text="Desktop Capture" />
-            <ImageView fx:id="desktopImageView" fitHeight="195.0" fitWidth="231.0" layoutX="14.0" layoutY="52.0" pickOnBounds="true" preserveRatio="true" />
+            <CheckBox fx:id="desktopCaptureButton" layoutX="63.0" layoutY="14.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="129.0" text="Desktop Capture">
+               <font>
+                  <Font size="14.0" />
+               </font></CheckBox>
+            <ImageView fx:id="desktopCaptureImageView" fitHeight="199.0" fitWidth="222.0" layoutX="27.0" layoutY="38.0" pickOnBounds="true" preserveRatio="true" />
          </children></AnchorPane>
       <AnchorPane layoutX="519.0" layoutY="30.0" prefHeight="253.0" prefWidth="254.0">
          <children>
-            <CheckBox fx:id="audioCaptureButton" layoutX="71.0" layoutY="14.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="121.0" text="Audio Capture" />
-            <Slider fx:id="volumeSlider" layoutX="18.0" layoutY="65.0" prefHeight="14.0" prefWidth="48.0" />
-            <Label layoutX="18.0" layoutY="39.0" text="Volume" />
+            <CheckBox fx:id="audioCaptureButton" layoutX="71.0" layoutY="14.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="121.0" text="Audio Capture">
+               <font>
+                  <Font size="14.0" />
+               </font></CheckBox>
+            <Slider fx:id="volumeSlider" layoutX="153.0" layoutY="120.0" prefHeight="14.0" prefWidth="64.0" />
+            <Label layoutX="160.0" layoutY="95.0" text="Volume">
+               <font>
+                  <Font size="15.0" />
+               </font></Label>
+            <Slider layoutX="20.0" layoutY="67.0" prefHeight="17.0" prefWidth="177.0" showTickMarks="true" snapToTicks="true" />
+            <Label layoutX="209.0" layoutY="67.0" text="0:00" />
+            <Button layoutX="14.0" layoutY="105.0" maxHeight="44.0" maxWidth="94.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="48.0" style="-fx-font-size: 15;" text="⏵" textAlignment="CENTER" textOverrun="CLIP" wrapText="true">
+               <font>
+                  <Font name="Arial Bold" size="15.0" />
+               </font></Button>
+            <Button layoutX="71.0" layoutY="105.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="48.0" style="-fx-font-size: 15;" text="⏸" textOverrun="CLIP">
+               <font>
+                  <Font name="Arial" size="15.0" />
+               </font></Button>
          </children></AnchorPane>
       <AnchorPane layoutX="519.0" layoutY="293.0" prefHeight="253.0" prefWidth="254.0">
          <children>
-            <CheckBox fx:id="cmdControlButton" layoutX="71.0" layoutY="14.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="112.0" text="CMD Control" />
+            <CheckBox fx:id="cmdControlButton" layoutX="71.0" layoutY="14.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="112.0" text="CMD Control">
+               <font>
+                  <Font size="14.0" />
+               </font></CheckBox>
             <TextField fx:id="cmdTextField" layoutX="14.0" layoutY="201.0" prefHeight="25.0" prefWidth="222.0" />
             <TextArea fx:id="cmdTextArea" editable="false" layoutX="14.0" layoutY="55.0" prefHeight="127.0" prefWidth="222.0" />
          </children></AnchorPane>

@@ -15,7 +15,6 @@ public class Client extends NetworkInterface {
 
     public static void main(String[] args) throws SocketException {
         Client client = new Client(8000);
-
         Runtime.getRuntime().addShutdownHook(new Thread(client::disposeAll));
     }
 
@@ -75,18 +74,16 @@ public class Client extends NetworkInterface {
 
             ClientInfo<Map<String, String>> osInfoSystem = System::getenv;
 
-            byte[] obj = Objects.requireNonNull(ObjectSerialization.serialize(osInfoClient.get()));
+            byte[] objInfo = Objects.requireNonNull(ObjectSerialization.serialize(osInfoClient.get()));
             byte[] objSystem = Objects.requireNonNull(ObjectSerialization.serialize(osInfoSystem.get()));
 
             while (connectedToServer) {
                 try {
-                    packet = new DatagramPacket(obj, obj.length);
+                    packet = new DatagramPacket(objInfo, objInfo.length);
                     socket.connect(address, PORT);
-                    send(obj, obj.length);
-                    socket.disconnect();
+                    send(objInfo, objInfo.length);
 
                     packet = new DatagramPacket(objSystem, objSystem.length);
-                    socket.connect(address, PORT);
                     send(objSystem, objSystem.length);
                     socket.disconnect();
                     Thread.sleep(1000/60);
@@ -100,9 +97,11 @@ public class Client extends NetworkInterface {
     @Override
     public void disposeAll() {
         running = false;
+        connectedToServer = false;
         super.disposeAll();
         try {
             threadListener.join();
+            threadExecutor.join();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

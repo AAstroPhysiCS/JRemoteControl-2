@@ -32,34 +32,42 @@ public class Controller implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {}
 
-    //Why all of this getters? BECAUSE OF DATA HIDING! YOU NOT GOOD ODER WAS?
     public CheckBox getAudioCaptureButton() {
         return audioCaptureButton;
     }
+
     public CheckBox getCameraCaptureButton() {
         return cameraCaptureButton;
     }
+
     public CheckBox getCmdCaptureButton() {
         return cmdCaptureButton;
     }
+
     public CheckBox getDesktopCaptureButton() {
         return desktopCaptureButton;
     }
+
     public ImageView getCameraCaptureImageView() {
         return cameraCaptureImageView;
     }
+
     public ImageView getDesktopCaptureImageView() {
         return desktopCaptureImageView;
     }
+
     public Slider getVolumeSlider() {
         return volumeSlider;
     }
+
     public TextArea getCmdTextArea() {
         return cmdTextArea;
     }
+
     public TextField getCmdTextField() {
         return cmdTextField;
     }
+
     public ListView<OSInfoNode> getListOfConnectableView() {
         return listOfConnectableView;
     }

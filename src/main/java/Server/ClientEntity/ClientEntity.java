@@ -6,9 +6,9 @@ public class ClientEntity {
 
     private final Map<String, String> env;
     private final String[] info;
-    private final String id;
+    private final byte id;
 
-    ClientEntity(Map<String, String> env, String[] info, String id){
+    ClientEntity(Map<String, String> env, String[] info, byte id){
         this.env = env;
         this.info = info;
         this.id = id;
@@ -17,7 +17,7 @@ public class ClientEntity {
     public Map<String, String> getEnv() {
         return env;
     }
-    public String getId() {
+    public byte getId() {
         return id;
     }
     public String[] getInfo() {

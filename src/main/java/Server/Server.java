@@ -10,6 +10,7 @@ import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class Server extends NetworkInterface {
 
@@ -42,13 +43,28 @@ public class Server extends NetworkInterface {
                         if (!allClientId.contains(buffer[1])) {
                             allClientId.add(buffer[1]);
 
+                            String[] info = null;
+                            Map<String, String> env = null;
+
                             System.out.println("New Client connected!");
                             send(new byte[]{CommandByte.CONFIRMATION_BYTE}, 1, packet.getAddress(), packet.getPort());
                             System.out.println("Confirmation byte send!");
 
                             buffer = new byte[BUFFER_SIZE];
                             buffer = receive(buffer.length, packet.getAddress(), packet.getPort());
-                            Object info = ObjectSerialization.deseralize(buffer);
+                            if (ObjectSerialization.deseralize(buffer) instanceof String[] s) { info = s; }
+
+                            buffer = new byte[BUFFER_SIZE];
+                            buffer = receive(buffer.length, packet.getAddress(), packet.getPort());
+                            if (ObjectSerialization.deseralize(buffer) instanceof Map s) { env = s;}
+
+                            if(env != null && info != null) {
+                                allClients.add(new ClientBuilder.ClientBuilderTemplate()
+                                        .setId(buffer[1])
+                                        .setInfo(info)
+                                        .setEnv(env)
+                                        .build());
+                            }
                         }
                     }
                     Thread.sleep(1000 / 60);
