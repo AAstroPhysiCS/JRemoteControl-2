@@ -24,7 +24,7 @@ public class Client extends NetworkInterface {
     private static final ExecutorService threadListener = Executors.newSingleThreadScheduledExecutor();
 
     private static final Random rand = new Random(LocalDateTime.now().getSecond());
-    private static final int id = rand.nextInt();
+    private static final int id = rand.nextInt(1000000);
 
     public Client(int PORT) throws SocketException {
         super(PORT);
@@ -35,10 +35,8 @@ public class Client extends NetworkInterface {
     private Runnable listener() {
         return () -> {
             try {
-                packet = new DatagramPacket(new byte[]{CommandByte.START_BYTE, (byte) id}, 2);
-                while(!socket.isConnected()){
-                    socket.connect(address, PORT);
-                }
+                packet = new DatagramPacket(new byte[]{CommandByte.START_CLIENT_BYTE, (byte) id}, 2);
+                socket.connect(address, PORT);
                 send(packet.getData(), packet.getData().length);
                 socket.disconnect();
                 byte[] dataReceived = receive(1, packet.getAddress(), packet.getPort());
@@ -55,10 +53,11 @@ public class Client extends NetworkInterface {
     private Runnable infoListener() {
         return () -> {
             ClientInfo<String[]> osInfoClient = () -> new String[]
-                    {System.getProperty("os.name"),
+                    {String.valueOf(id),
+                            System.getProperty("os.name"),
                             System.getProperty("os.version"),
                             System.getProperty("os.vendor"),
-                            System.getProperty("os.architecture"),
+                            System.getProperty("os.arch"),
                             System.getProperty("user.name")};
 
             ClientInfo<Map<String, String>> osInfoSystem = System::getenv;

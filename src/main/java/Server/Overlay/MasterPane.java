@@ -3,6 +3,7 @@ package Server.Overlay;
 import Server.ClientEntity.ClientEntity;
 import Server.Server;
 import Tools.Disposeable;
+import javafx.application.Platform;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -24,8 +25,10 @@ public class MasterPane implements Disposeable {
 
     public Runnable updateComponents() {
         return () -> {
-            for (ClientEntity e : server.getAllClients())
-                controller.addClients(e);
+            Platform.runLater(() -> {   //to not have exceptions...
+                for (ClientEntity e : server.getAllClients())
+                    controller.addClients(e);
+            });
         };
     }
 

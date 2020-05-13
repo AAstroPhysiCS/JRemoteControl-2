@@ -8,6 +8,8 @@ import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 
+import java.util.List;
+
 public abstract class Controller implements Initializable {
     @FXML
     protected ImageView desktopCaptureImageView, cameraCaptureImageView;
@@ -31,8 +33,7 @@ public abstract class Controller implements Initializable {
     protected ListView<ClientEntity> listOfConnectableView;
 
     public void addClients(ClientEntity clientEntity) {
-        if (!listOfConnectableView.getItems().contains(clientEntity)){
-            listOfConnectableView.setCellFactory(e -> new ButtonLabelCell<>());
+        if (!listOfConnectableView.getItems().contains(clientEntity)) {
             listOfConnectableView.getItems().add(clientEntity);
         }
     }

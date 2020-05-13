@@ -1,11 +1,12 @@
 package Server.Overlay.Cell;
 
+import Server.ClientEntity.ClientEntity;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.layout.AnchorPane;
 
-public class ButtonLabelCell<T> extends ListCell<T> {
+public class ButtonLabelCell<T extends ClientEntity> extends ListCell<T> {
 
     private final AnchorPane pane = new AnchorPane();
     private final Button button = new Button("Connect");
@@ -27,12 +28,21 @@ public class ButtonLabelCell<T> extends ListCell<T> {
         label.setLayoutY(0);
 
         button.setLayoutX(120);
-        button.setLayoutY(35);
+        button.setLayoutY(55);
+
+        addListeners();
 
         if(pane.getChildren().size() == 0)
             pane.getChildren().addAll(label, button);
         setText(null);
         setGraphic(pane);
+    }
+
+    private void addListeners(){
+        button.setOnMouseClicked(mouseEvent -> {
+            T item = getItem();
+            System.out.println("CONNECTED! " + item.toString());
+        });
     }
 
     public Button getButton() {

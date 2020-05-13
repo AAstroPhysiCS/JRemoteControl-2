@@ -1,5 +1,7 @@
 package Server.Overlay;
 
+import Server.Overlay.Cell.ButtonLabelCell;
+
 import java.awt.*;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -17,5 +19,7 @@ public class ControllerImpl extends Controller {
 
         Drawer.drawColor(desktopCaptureImageView, Color.LIGHT_GRAY);
         Drawer.drawColor(cameraCaptureImageView, Color.LIGHT_GRAY);
+
+        listOfConnectableView.setCellFactory(e -> new ButtonLabelCell<>());
     }
 }

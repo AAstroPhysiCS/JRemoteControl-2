@@ -8,28 +8,32 @@ public class ClientEntity {
     private final String[] info;
     private final byte id;
 
-    ClientEntity(Map<String, String> env, String[] info, byte id){
+    ClientEntity(Map<String, String> env, String[] info, byte id) {
         this.env = env;
         this.info = info;
         this.id = id;
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return """
                 Name: %s
+                Id: %s
+                OS Name: %s
                 OS Version: %s
                 OS Vendor: %s
-                OS Architecture %s
-                """.formatted(info[info.length - 1], info[0], info[1], info[2]);
+                OS Architecture: %s
+                """.formatted(info[info.length - 1], info[0], info[1], info[2], info[3], info[4]);
     }
 
     public Map<String, String> getEnv() {
         return env;
     }
+
     public byte getId() {
         return id;
     }
+
     public String[] getInfo() {
         return info;
     }

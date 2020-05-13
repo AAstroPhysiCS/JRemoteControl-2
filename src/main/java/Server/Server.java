@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -39,13 +40,14 @@ public class Server extends NetworkInterface {
 
                     if (buffer.length <= 0) continue;
 
-                    if (buffer[0] == CommandByte.START_BYTE) {
+                    if (buffer[0] == CommandByte.START_CLIENT_BYTE) {
                         if (!allClientId.contains(buffer[1])) {
                             allClientId.add(buffer[1]);
 
                             String[] info = null;
                             Map<String, String> env = null;
 
+                            System.out.println("----------------------------------");
                             System.out.println("New Client connected!");
                             send(new byte[]{CommandByte.CONFIRMATION_BYTE}, 1, packet.getAddress(), packet.getPort());
                             System.out.println("Confirmation byte send!");
