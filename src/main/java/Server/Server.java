@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -29,6 +28,7 @@ public class Server extends NetworkInterface {
         socket = new DatagramSocket(PORT, address);
         thread = new Thread(run(), "Server Thread");
         running = true;
+        thread.setDaemon(true);
         thread.start();
     }
 
@@ -36,11 +36,12 @@ public class Server extends NetworkInterface {
         return () -> {
             while (running) {
                 try {
-                    buffer = receive(2);
+                    if(!socket.isClosed())
+                        buffer = receive(2);
 
                     if (buffer.length <= 0) continue;
 
-                    if (buffer[0] == CommandByte.START_CLIENT_BYTE) {
+                    if (buffer[0] == CommandByte.START_BYTE) {
                         if (!allClientId.contains(buffer[1])) {
                             allClientId.add(buffer[1]);
 
@@ -65,7 +66,6 @@ public class Server extends NetworkInterface {
 
                             if(env != null && info != null) {
                                 allClients.add(new ClientBuilder.ClientBuilderTemplate()
-                                        .setId(buffer[1])
                                         .setInfo(info)
                                         .setEnv(env)
                                         .build());
@@ -77,11 +77,6 @@ public class Server extends NetworkInterface {
                     e.printStackTrace();
                 }
             }
-            try {
-                thread.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
         };
     }
 
@@ -91,9 +86,8 @@ public class Server extends NetworkInterface {
 
     @Override
     public void disposeAll() {
+        socket.close();
         running = false;
         super.disposeAll();
-        socket.disconnect();
-        socket.close();
     }
 }

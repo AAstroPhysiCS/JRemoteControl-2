@@ -1,17 +1,24 @@
 package Server.ClientEntity;
 
+import Server.ClientEntity.Events.Listener;
+
 import java.util.Map;
 
 public class ClientEntity {
 
     private final Map<String, String> env;
     private final String[] info;
-    private final byte id;
+    private final String id;
 
-    ClientEntity(Map<String, String> env, String[] info, byte id) {
+    //every cliententity has an listener
+    private final Listener<ClientEntity> event;
+
+    ClientEntity(Map<String, String> env, String[] info) {
         this.env = env;
         this.info = info;
-        this.id = id;
+        this.id = info[0];
+
+        event = new Listener<>(this);
     }
 
     @Override
@@ -23,18 +30,22 @@ public class ClientEntity {
                 OS Version: %s
                 OS Vendor: %s
                 OS Architecture: %s
-                """.formatted(info[info.length - 1], info[0], info[1], info[2], info[3], info[4]);
+                """.formatted(info[info.length - 1], id, info[1], info[2], info[3], info[4]).trim();
+    }
+
+    public String getId() {
+        return id;
     }
 
     public Map<String, String> getEnv() {
         return env;
     }
 
-    public byte getId() {
-        return id;
-    }
-
     public String[] getInfo() {
         return info;
+    }
+
+    public Listener<ClientEntity> getEventListener() {
+        return event;
     }
 }

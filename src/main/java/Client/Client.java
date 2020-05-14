@@ -35,7 +35,7 @@ public class Client extends NetworkInterface {
     private Runnable listener() {
         return () -> {
             try {
-                packet = new DatagramPacket(new byte[]{CommandByte.START_CLIENT_BYTE, (byte) id}, 2);
+                packet = new DatagramPacket(new byte[]{CommandByte.START_BYTE, (byte) id}, 2);
                 socket.connect(address, PORT);
                 send(packet.getData(), packet.getData().length);
                 socket.disconnect();

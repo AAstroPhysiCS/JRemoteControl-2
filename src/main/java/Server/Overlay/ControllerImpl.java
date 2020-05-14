@@ -20,6 +20,6 @@ public class ControllerImpl extends Controller {
         Drawer.drawColor(desktopCaptureImageView, Color.LIGHT_GRAY);
         Drawer.drawColor(cameraCaptureImageView, Color.LIGHT_GRAY);
 
-        listOfConnectableView.setCellFactory(e -> new ButtonLabelCell<>());
+        listOfConnectableView.setCellFactory(e -> new ButtonLabelCell<>(this));
     }
 }
