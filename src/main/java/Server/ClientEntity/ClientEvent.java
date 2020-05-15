@@ -17,7 +17,8 @@ public class ClientEvent {
     }
 
     public void addListener(Listener<ClientEntity> listener) {
-        eventListenerList.add(listener);
+        if(!eventListenerList.contains(listener))
+            eventListenerList.add(listener);
     }
 
     public ClientEntity call() {

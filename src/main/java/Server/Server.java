@@ -1,7 +1,7 @@
 package Server;
 
-import Client.ClientInfo;
 import Handler.InfoHandler;
+import Handler.Message;
 import Handler.ObjectHandler;
 import Server.ClientEntity.ClientBuilder;
 import Server.ClientEntity.ClientEntity;
@@ -26,13 +26,17 @@ public class Server extends NetworkInterface {
     private final List<ClientEntity> allClients = new ArrayList<>();
 
     private final InfoHandler infoHandler;
-    private final ObjectHandler<ClientInfo<?>> objectHandler;
+
+    private final ObjectHandler<Message<?>> clientObjectHandler;
+    private final ObjectHandler<Message<?>> serverObjectHandler;
 
     public Server(int PORT) throws SocketException {
         super(PORT);
         socket = new DatagramSocket(PORT, address);
         infoHandler = new InfoHandler(socket);
-        objectHandler = new ObjectHandler<>();
+
+        clientObjectHandler = new ObjectHandler<>();
+        serverObjectHandler = new ObjectHandler<>();
 
         thread = new Thread(run(), "Server Thread");
         running = true;
@@ -53,7 +57,7 @@ public class Server extends NetworkInterface {
 
                     if (buffer.length == 0) continue;
 
-                    ClientInfo<?> currentInfo = objectHandler.readObjects(buffer);
+                    Message<?> currentInfo = clientObjectHandler.readObjects(buffer);
                     String[] infoOuter = null;
                     if(currentInfo.get() instanceof String[] s){
                         infoOuter = s;
@@ -75,14 +79,14 @@ public class Server extends NetworkInterface {
 
                             buffer = new byte[BUFFER_SIZE];
                             buffer = infoHandler.receive(buffer.length, infoHandler.getAddress(), infoHandler.getPort());
-                            currentInfo = objectHandler.readObjects(buffer);
+                            currentInfo = clientObjectHandler.readObjects(buffer);
                             if (currentInfo.get() instanceof String[] s) {
                                 info = s;
                             }
 
                             buffer = new byte[BUFFER_SIZE];
                             buffer = infoHandler.receive(buffer.length, infoHandler.getAddress(), infoHandler.getPort());
-                            currentInfo = objectHandler.readObjects(buffer);
+                            currentInfo = clientObjectHandler.readObjects(buffer);
                             if (currentInfo.get() instanceof Map s) {
                                 env = s;
                             }
@@ -109,9 +113,17 @@ public class Server extends NetworkInterface {
     private Runnable featureHandler() {
         return () -> {
             while(runningSocketHandler){
-//                socketHandler.run();
+            }
+            try {
+                threadFeatureHandler.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         };
+    }
+
+    public ObjectHandler<Message<?>> getServerObjectHandler() {
+        return serverObjectHandler;
     }
 
     public List<ClientEntity> getAllClients() {

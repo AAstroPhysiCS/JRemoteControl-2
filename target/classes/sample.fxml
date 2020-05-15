@@ -5,10 +5,10 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane prefHeight="601.0" prefWidth="950.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <ListView fx:id="listOfConnectableView" focusTraversable="false" layoutX="27.0" layoutY="65.0" prefHeight="493.0" prefWidth="208.0" />
-      <AnchorPane fx:id="controlPane" disable="true" layoutX="237.0" layoutY="7.0" prefHeight="594.0" prefWidth="562.0">
+      <ListView fx:id="listOfConnectableView" focusTraversable="false" layoutX="27.0" layoutY="65.0" prefHeight="493.0" prefWidth="222.0" />
+      <AnchorPane fx:id="controlPane" disable="true" layoutX="374.0" layoutY="4.0" prefHeight="594.0" prefWidth="562.0">
          <children>
             <AnchorPane fx:id="desktopCapturePane" layoutX="26.0" layoutY="43.0" prefHeight="221.0" prefWidth="254.0">
                <children>

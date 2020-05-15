@@ -1,5 +1,7 @@
 package Server.Overlay.Pane;
 
+import Handler.Message;
+import Handler.ObjectHandler;
 import Server.ClientEntity.ClientEntity;
 import Server.ClientEntity.ClientEvent;
 import Server.Overlay.Controller.Controller;
@@ -16,8 +18,9 @@ public class MasterPane implements Disposeable {
     private final Controller controller;
     private final Server server;
 
+    private final ObjectHandler<Message<?>> serverMessageHandler;
+
     private final ClientEvent changeEvent;
-    private ClientEntity selectedClient;
 
     private static final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
 
@@ -26,7 +29,18 @@ public class MasterPane implements Disposeable {
         this.server = server;
         changeEvent = new ClientEvent(controller);
 
+        serverMessageHandler = server.getServerObjectHandler();
+
         scheduledExecutorService.scheduleAtFixedRate(updateComponents(), 0, 1000, TimeUnit.MILLISECONDS);
+        initComponents();
+    }
+
+    private void initComponents(){
+        controller.desktopCaptureButton.selectedProperty().addListener((observableValue, oldValue, newValue) -> {
+            if (newValue) {
+                System.out.println("HELLO");
+            }
+        });
     }
 
     public Runnable updateComponents() {
@@ -35,15 +49,11 @@ public class MasterPane implements Disposeable {
                 controller.addClients(e);
                 changeEvent.addListener(e.getEventListener());
             }
-            selectedClient = changeEvent.call();
+            ClientEntity selectedClient = changeEvent.call();
             if (selectedClient != null) {
-                System.out.println(selectedClient.getId());
+
             }
         });
-    }
-
-    public ClientEntity getSelectedClient() {
-        return selectedClient;
     }
 
     @Override

@@ -18,14 +18,14 @@ public class MainFrame extends Application {
         launch(args);
     }
 
-    private static final int WIDTH = 800, HEIGHT = 600;
+    private static final int WIDTH = 950, HEIGHT = 600;
     private static Server server;
     private static MasterPane pane;
 
     @Override
     public void start(Stage primaryStage) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/sample.fxml"));
-        Controller controller = new ControllerImpl();
+        Controller controller = new ControllerImpl(primaryStage);
         loader.setController(controller);
         primaryStage.setScene(new Scene(loader.load(), WIDTH, HEIGHT));
         primaryStage.setTitle("JRemoteControl 2 - Controller 💩");

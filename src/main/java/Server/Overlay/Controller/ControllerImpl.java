@@ -1,7 +1,8 @@
 package Server.Overlay.Controller;
 
-import Server.Overlay.Cell.ButtonLabelCell;
+import Server.ClientEntity.Cell.ClientEntityCell;
 import Server.Overlay.Drawer;
+import javafx.stage.Stage;
 
 import java.awt.*;
 import java.net.URL;
@@ -9,7 +10,9 @@ import java.util.ResourceBundle;
 
 public class ControllerImpl extends Controller {
 
-    public ControllerImpl() {}
+    public ControllerImpl(Stage stage) {
+        super(stage);
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -21,6 +24,6 @@ public class ControllerImpl extends Controller {
         Drawer.drawColor(desktopCaptureImageView, Color.LIGHT_GRAY);
         Drawer.drawColor(cameraCaptureImageView, Color.LIGHT_GRAY);
 
-        listOfConnectableView.setCellFactory(e -> new ButtonLabelCell<>(this));
+        listOfConnectableView.setCellFactory(e -> new ClientEntityCell<>(this));
     }
 }

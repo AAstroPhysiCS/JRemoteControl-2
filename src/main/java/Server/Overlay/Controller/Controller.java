@@ -6,6 +6,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.Stage;
+import javafx.stage.Window;
 
 public abstract class Controller implements Initializable {
     @FXML
@@ -33,6 +35,7 @@ public abstract class Controller implements Initializable {
     public Label statusLabel;
 
     public ClientEntity item;
+    public final Stage stage;
 
     public void addClients(ClientEntity clientEntity) {
         if (!listOfConnectableView.getItems().contains(clientEntity)) {
@@ -40,7 +43,15 @@ public abstract class Controller implements Initializable {
         }
     }
 
+    public Controller(Stage stage){
+        this.stage = stage;
+    }
+
     public <T extends ClientEntity> void setFocus(T item) {
         this.item = item;
+    }
+
+    public Stage getStage() {
+        return stage;
     }
 }

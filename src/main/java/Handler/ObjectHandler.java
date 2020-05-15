@@ -1,8 +1,8 @@
 package Handler;
 
-import Client.ClientInfo;
+import Handler.Serialization.ObjectSerialization;
 
-public class ObjectHandler<V extends ClientInfo<?>> {
+public class ObjectHandler<V extends Message<?>> {
 
     public V readObjects(byte[] data) {
         return ObjectSerialization.deseralize(data);
