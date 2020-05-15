@@ -1,11 +1,14 @@
-package Features;
+package Client.Features;
 
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.videoio.VideoCapture;
 
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 public class CameraCapture extends Feature {
 
@@ -13,27 +16,18 @@ public class CameraCapture extends Feature {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
     }
 
-    private static CameraCapture cameraCaptureInstance;
-
-    public static CameraCapture getInstance(final int index) {
-        if (cameraCaptureInstance == null)
-            cameraCaptureInstance = new CameraCapture("Camera Capture", index);
-        return cameraCaptureInstance;
-    }
-
     private Mat cam_Mat;
     private static VideoCapture videoCapture;
     private final int index;
 
-    CameraCapture(String name, final int index) {
-        super(name);
+    public CameraCapture(final int index) {
         this.index = index;
         videoCapture = new VideoCapture();
     }
 
-    private void open(){
+    private void open() {
         boolean success = videoCapture.open(index);
-        if(!success) throw new InternalError("Camera could not be opened!");
+        if (!success) throw new InternalError("Camera could not be opened!");
     }
 
     private BufferedImage convertToBufferedImage(Mat mat) {
@@ -44,8 +38,15 @@ public class CameraCapture extends Feature {
         return image;
     }
 
-    public BufferedImage getCamAsBufferedImage() {
-        return convertToBufferedImage(cam_Mat);
+    public byte[] getImageAsByteArray() {
+        BufferedImage image = convertToBufferedImage(cam_Mat);
+        try (ByteArrayOutputStream ous = new ByteArrayOutputStream()) {
+            ImageIO.write(image, "png", ous);
+            return ous.toByteArray();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     @Override
@@ -59,7 +60,7 @@ public class CameraCapture extends Feature {
 
     @Override
     public void disposeAll() {
-        if(cam_Mat != null)
+        if (cam_Mat != null)
             cam_Mat.release();
         videoCapture.release();
     }

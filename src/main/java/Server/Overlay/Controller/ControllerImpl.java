@@ -1,6 +1,7 @@
-package Server.Overlay;
+package Server.Overlay.Controller;
 
 import Server.Overlay.Cell.ButtonLabelCell;
+import Server.Overlay.Drawer;
 
 import java.awt.*;
 import java.net.URL;
@@ -8,7 +9,7 @@ import java.util.ResourceBundle;
 
 public class ControllerImpl extends Controller {
 
-    ControllerImpl() {}
+    public ControllerImpl() {}
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {

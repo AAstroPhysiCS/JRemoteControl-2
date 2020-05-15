@@ -1,6 +1,7 @@
 package Server.ClientEntity;
 
-import Server.ClientEntity.Events.Listener;
+import Events.Listener;
+import Server.Overlay.Controller.Controller;
 
 import java.util.Map;
 
@@ -18,7 +19,12 @@ public class ClientEntity {
         this.info = info;
         this.id = info[0];
 
-        event = new Listener<>(this);
+        event = new Listener<>(this) {
+            @Override
+            public boolean onFocus(Controller controller, ClientEntity e) {
+                return controller.item == e;
+            }
+        };
     }
 
     @Override

@@ -1,4 +1,4 @@
-package Server.Overlay;
+package Server.Overlay.Controller;
 
 import Server.ClientEntity.ClientEntity;
 import javafx.fxml.FXML;

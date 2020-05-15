@@ -1,12 +1,12 @@
-package Server.Overlay;
+package Server.Overlay.Pane;
 
 import Server.ClientEntity.ClientEntity;
-import Server.ClientEntity.Events.ClientEvent;
+import Server.ClientEntity.ClientEvent;
+import Server.Overlay.Controller.Controller;
 import Server.Server;
 import Tools.Disposeable;
 import javafx.application.Platform;
 
-import java.util.Arrays;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -17,6 +17,7 @@ public class MasterPane implements Disposeable {
     private final Server server;
 
     private final ClientEvent changeEvent;
+    private ClientEntity selectedClient;
 
     private static final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
 
@@ -34,11 +35,15 @@ public class MasterPane implements Disposeable {
                 controller.addClients(e);
                 changeEvent.addListener(e.getEventListener());
             }
-            ClientEntity selectedClient = changeEvent.call();
+            selectedClient = changeEvent.call();
             if (selectedClient != null) {
                 System.out.println(selectedClient.getId());
             }
         });
+    }
+
+    public ClientEntity getSelectedClient() {
+        return selectedClient;
     }
 
     @Override

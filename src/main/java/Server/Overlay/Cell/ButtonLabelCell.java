@@ -1,7 +1,7 @@
 package Server.Overlay.Cell;
 
 import Server.ClientEntity.ClientEntity;
-import Server.Overlay.Controller;
+import Server.Overlay.Controller.Controller;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;

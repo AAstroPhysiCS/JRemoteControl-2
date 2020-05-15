@@ -1,7 +1,8 @@
-package Server.ClientEntity.Events;
+package Server.ClientEntity;
 
-import Server.ClientEntity.ClientEntity;
-import Server.Overlay.Controller;
+import Events.EventListener;
+import Events.Listener;
+import Server.Overlay.Controller.Controller;
 
 import java.util.ArrayList;
 import java.util.List;

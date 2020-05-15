@@ -1,6 +1,6 @@
-package Server.ClientEntity.Events;
+package Events;
 
-import Server.Overlay.Controller;
+import Server.Overlay.Controller.Controller;
 
 @FunctionalInterface
 public interface EventListener<T> {

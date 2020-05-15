@@ -1,5 +1,8 @@
 package Server.Overlay;
 
+import Server.Overlay.Controller.Controller;
+import Server.Overlay.Controller.ControllerImpl;
+import Server.Overlay.Pane.MasterPane;
 import Server.Server;
 import javafx.application.Application;
 import javafx.application.Platform;
