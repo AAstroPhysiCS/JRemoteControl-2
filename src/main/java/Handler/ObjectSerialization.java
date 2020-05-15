@@ -4,7 +4,7 @@ import java.io.*;
 
 public class ObjectSerialization {
 
-    private ObjectSerialization() {}
+    ObjectSerialization() {}
 
     public static <T> byte[] serialize(T obj) {
         try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {

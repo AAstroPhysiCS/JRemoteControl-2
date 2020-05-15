@@ -9,6 +9,7 @@ module JRemoteControl2 {
     requires opencv;
     requires java.net.http;
 
+    exports Server.ClientEntity to javafx.fxml;
     exports Server.Overlay.Controller to javafx.fxml;
 
     opens Server.Overlay;

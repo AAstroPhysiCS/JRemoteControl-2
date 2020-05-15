@@ -5,12 +5,13 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 
-public class InfoHandler extends SocketDataHandler {
+public class InfoHandler {
 
     public DatagramPacket packet;
+    public DatagramSocket socket;
 
     public InfoHandler(DatagramSocket socket) {
-        super(socket);
+        this.socket = socket;
     }
 
     public byte[] receive(final int length) throws IOException {
@@ -35,14 +36,6 @@ public class InfoHandler extends SocketDataHandler {
         packet = new DatagramPacket(buffer, length, address, port);
         socket.receive(packet);
         return packet.getData();
-    }
-
-    public Object handle() {
-        return null;
-    }
-
-    public <V> V handleTo(byte[] obj, V to) {
-        return null;
     }
 
     public InetAddress getAddress() {

@@ -2,7 +2,6 @@ package Tools.Network;
 
 import Tools.Disposeable;
 
-import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -14,9 +13,8 @@ public abstract class NetworkInterface implements Disposeable {
     protected final int PORT;
 
     protected DatagramSocket socket;
-    protected DatagramPacket packet;
 
-    protected String hostName = "OneTrueGod";
+    protected final String hostName = "OneTrueGod";
 
     //not using enum because i need to eventually send bytes
     public static class CommandByte {
@@ -52,10 +50,6 @@ public abstract class NetworkInterface implements Disposeable {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-    }
-
-    public DatagramPacket getPacket() {
-        return packet;
     }
 
     public DatagramSocket getSocket() {

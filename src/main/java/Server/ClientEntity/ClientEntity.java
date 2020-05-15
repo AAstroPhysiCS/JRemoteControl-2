@@ -9,15 +9,15 @@ public class ClientEntity {
 
     private final Map<String, String> env;
     private final String[] info;
-    private final String id;
+    private final int id;
 
     //every cliententity has an listener
     private final Listener<ClientEntity> event;
 
-    ClientEntity(Map<String, String> env, String[] info) {
+    ClientEntity(Map<String, String> env, String[] info, int id) {
         this.env = env;
         this.info = info;
-        this.id = info[0];
+        this.id = id;
 
         event = new Listener<>(this) {
             @Override
@@ -39,7 +39,7 @@ public class ClientEntity {
                 """.formatted(info[info.length - 1], id, info[1], info[2], info[3], info[4]).trim();
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
