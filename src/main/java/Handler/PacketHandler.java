@@ -5,20 +5,22 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 
-public class InfoHandler {
+public class PacketHandler {
 
     public DatagramPacket packet;
     public DatagramSocket socket;
 
-    public InfoHandler(DatagramSocket socket) {
+    private InetAddress address;
+    private int port;
+
+    public PacketHandler(DatagramSocket socket) {
         this.socket = socket;
     }
 
-    public byte[] receive(final int length) throws IOException {
-        byte[] buffer = new byte[length];
-        packet = new DatagramPacket(buffer, length);
-        socket.receive(packet);
-        return packet.getData();
+    public PacketHandler(DatagramSocket socket, InetAddress address, int port) {
+        this.socket = socket;
+        this.address = address;
+        this.port = port;
     }
 
     public void send(byte[] buffer, final int length) throws IOException {
@@ -31,6 +33,13 @@ public class InfoHandler {
         socket.send(packet);
     }
 
+    public byte[] receive(final int length) throws IOException {
+        byte[] buffer = new byte[length];
+        packet = new DatagramPacket(buffer, length);
+        socket.receive(packet);
+        return packet.getData();
+    }
+
     public byte[] receive(final int length, InetAddress address, int port) throws IOException {
         byte[] buffer = new byte[length];
         packet = new DatagramPacket(buffer, length, address, port);
@@ -38,11 +47,15 @@ public class InfoHandler {
         return packet.getData();
     }
 
-    public InetAddress getAddress() {
+    public InetAddress getPacketAddress() {
         return packet.getAddress();
     }
 
-    public int getPort() {
+    public InetAddress getAddress(){ return address; }
+
+    public int getPort(){ return port; }
+
+    public int getPacketPort() {
         return packet.getPort();
     }
 }

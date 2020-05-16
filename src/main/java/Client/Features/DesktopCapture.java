@@ -22,6 +22,11 @@ public class DesktopCapture extends Feature {
         image = r.createScreenCapture(new Rectangle(screenDimension));
     }
 
+    @Override
+    protected Runnable run() {
+        return null;
+    }
+
     public static BufferedImage getImage() {
         return image;
     }

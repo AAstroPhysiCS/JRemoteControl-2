@@ -12,6 +12,11 @@ public class AudioCapture extends Feature {
     }
 
     @Override
+    protected Runnable run() {
+        return null;
+    }
+
+    @Override
     public void disposeAll() {
 
     }

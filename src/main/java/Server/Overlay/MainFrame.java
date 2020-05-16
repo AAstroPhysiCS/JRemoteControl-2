@@ -18,7 +18,7 @@ public class MainFrame extends Application {
         launch(args);
     }
 
-    private static final int WIDTH = 950, HEIGHT = 600;
+    private static final int WIDTH = 800, HEIGHT = 600;
     private static Server server;
     private static MasterPane pane;
 

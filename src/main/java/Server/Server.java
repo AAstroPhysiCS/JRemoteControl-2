@@ -1,6 +1,6 @@
 package Server;
 
-import Handler.InfoHandler;
+import Handler.PacketHandler;
 import Handler.Message;
 import Handler.ObjectHandler;
 import Server.ClientEntity.ClientBuilder;
@@ -16,8 +16,8 @@ import java.util.Map;
 
 public class Server extends NetworkInterface {
 
-    private final Thread thread, threadFeatureHandler;
-    private boolean running, runningSocketHandler;
+    private final Thread thread, threadFeatureListener;
+    private boolean running, runningFeature;
 
     private final int BUFFER_SIZE = 10000;
     private byte[] buffer;
@@ -25,39 +25,40 @@ public class Server extends NetworkInterface {
     private final List<Integer> allClientId = new ArrayList<>();    //for checking
     private final List<ClientEntity> allClients = new ArrayList<>();
 
-    private final InfoHandler infoHandler;
-
-    private final ObjectHandler<Message<?>> clientObjectHandler;
-    private final ObjectHandler<Message<?>> serverObjectHandler;
+    private final PacketHandler clientPacketHandler, featurePacketHandler;
+    private final ObjectHandler<Message<?>> objectHandler;
 
     public Server(int PORT) throws SocketException {
         super(PORT);
         socket = new DatagramSocket(PORT, address);
-        infoHandler = new InfoHandler(socket);
 
-        clientObjectHandler = new ObjectHandler<>();
-        serverObjectHandler = new ObjectHandler<>();
+        clientPacketHandler = new PacketHandler(socket);
+        featurePacketHandler = new PacketHandler(socket);
+        objectHandler = new ObjectHandler<>();
 
-        thread = new Thread(run(), "Server Thread");
+        thread = new Thread(clientListener(), "Server Thread");
+        threadFeatureListener = new Thread(featureListener(), "Feature Thread");
+
         running = true;
-        thread.setDaemon(true);
-        thread.start();
+        runningFeature = true;
 
-        threadFeatureHandler = new Thread(featureHandler(), "Feature Handler");
-        runningSocketHandler = true;
-        threadFeatureHandler.start();
+        thread.setDaemon(true);
+        threadFeatureListener.setDaemon(true);
+
+        thread.start();
+        threadFeatureListener.start();
     }
 
-    private Runnable run() {
+    private Runnable clientListener() {
         return () -> {
             while (running) {
                 try {
                     if (!socket.isClosed())
-                        buffer = infoHandler.receive(BUFFER_SIZE);
+                        buffer = clientPacketHandler.receive(BUFFER_SIZE);
 
                     if (buffer.length == 0) continue;
 
-                    Message<?> currentInfo = clientObjectHandler.readObjects(buffer);
+                    Message<?> currentInfo = objectHandler.readObjects(buffer);
                     String[] infoOuter = null;
                     if(currentInfo.get() instanceof String[] s){
                         infoOuter = s;
@@ -74,24 +75,24 @@ public class Server extends NetworkInterface {
 
                             System.out.println("----------------------------------");
                             System.out.println("New Client connected!");
-                            infoHandler.send(new byte[]{CommandByte.CONFIRMATION_BYTE}, 1, infoHandler.getAddress(), infoHandler.getPort());
+                            clientPacketHandler.send(new byte[]{CommandByte.CONFIRMATION_BYTE}, 1, clientPacketHandler.getPacketAddress(), clientPacketHandler.getPacketPort());
                             System.out.println("Confirmation byte send!");
 
                             buffer = new byte[BUFFER_SIZE];
-                            buffer = infoHandler.receive(buffer.length, infoHandler.getAddress(), infoHandler.getPort());
-                            currentInfo = clientObjectHandler.readObjects(buffer);
+                            buffer = clientPacketHandler.receive(buffer.length, clientPacketHandler.getPacketAddress(), clientPacketHandler.getPacketPort());
+                            currentInfo = objectHandler.readObjects(buffer);
                             if (currentInfo.get() instanceof String[] s) {
                                 info = s;
                             }
 
                             buffer = new byte[BUFFER_SIZE];
-                            buffer = infoHandler.receive(buffer.length, infoHandler.getAddress(), infoHandler.getPort());
-                            currentInfo = clientObjectHandler.readObjects(buffer);
+                            buffer = clientPacketHandler.receive(buffer.length, clientPacketHandler.getPacketAddress(), clientPacketHandler.getPacketPort());
+                            currentInfo = objectHandler.readObjects(buffer);
                             if (currentInfo.get() instanceof Map s) {
                                 env = s;
                             }
 
-                            infoHandler.send(new byte[]{CommandByte.INFO_ACHIEVED_BYTE}, 1, infoHandler.getAddress(), infoHandler.getPort());
+                            clientPacketHandler.send(new byte[]{CommandByte.INFO_ACHIEVED_BYTE}, 1, clientPacketHandler.getPacketAddress(), clientPacketHandler.getPacketPort());
 
                             System.out.println("Client info achieved!");
                             assert env != null && info != null;
@@ -99,6 +100,8 @@ public class Server extends NetworkInterface {
                                     .setId(id)
                                     .setInfo(info)
                                     .setEnv(env)
+                                    .address(clientPacketHandler.getPacketAddress())
+                                    .port(clientPacketHandler.getPacketPort())
                                     .build());
                         }
                     }
@@ -110,20 +113,20 @@ public class Server extends NetworkInterface {
         };
     }
 
-    private Runnable featureHandler() {
+    private Runnable featureListener() {
         return () -> {
-            while(runningSocketHandler){
-            }
-            try {
-                threadFeatureHandler.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            while(runningFeature){
+                
             }
         };
     }
 
-    public ObjectHandler<Message<?>> getServerObjectHandler() {
-        return serverObjectHandler;
+    public ObjectHandler<Message<?>> getObjectHandler() {
+        return objectHandler;
+    }
+
+    public PacketHandler getFeaturePacketHandler() {
+        return featurePacketHandler;
     }
 
     public List<ClientEntity> getAllClients() {
@@ -134,7 +137,7 @@ public class Server extends NetworkInterface {
     public void disposeAll() {
         socket.close();
         running = false;
-        runningSocketHandler = false;
+        runningFeature = false;
         super.disposeAll();
     }
 }

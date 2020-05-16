@@ -9,7 +9,7 @@ import java.net.UnknownHostException;
 
 public abstract class NetworkInterface implements Disposeable {
 
-    protected static InetAddress address;
+    protected InetAddress address;
     protected final int PORT;
 
     protected DatagramSocket socket;
@@ -56,7 +56,7 @@ public abstract class NetworkInterface implements Disposeable {
         return socket;
     }
 
-    public static InetAddress getAddress() {
+    public InetAddress getAddress() {
         return address;
     }
 

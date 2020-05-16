@@ -3,6 +3,7 @@ package Server.ClientEntity;
 import Events.Listener;
 import Server.Overlay.Controller.Controller;
 
+import java.net.InetAddress;
 import java.util.Map;
 
 public class ClientEntity {
@@ -11,13 +12,18 @@ public class ClientEntity {
     private final String[] info;
     private final int id;
 
+    private final InetAddress address;
+    private final int port;
+
     //every cliententity has an listener
     private final Listener<ClientEntity> event;
 
-    ClientEntity(Map<String, String> env, String[] info, int id) {
+    ClientEntity(Map<String, String> env, String[] info, int id, InetAddress address, int port) {
         this.env = env;
         this.info = info;
         this.id = id;
+        this.address = address;
+        this.port = port;
 
         event = new Listener<>(this) {
             @Override
@@ -45,6 +51,14 @@ public class ClientEntity {
 
     public Map<String, String> getEnv() {
         return env;
+    }
+
+    public InetAddress getAddress() {
+        return address;
+    }
+
+    public int getPort() {
+        return port;
     }
 
     public String[] getInfo() {
