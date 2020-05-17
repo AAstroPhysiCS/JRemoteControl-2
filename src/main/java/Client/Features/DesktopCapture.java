@@ -18,6 +18,11 @@ public class DesktopCapture extends Feature {
     }
 
     @Override
+    public void stopFeature() {
+
+    }
+
+    @Override
     public void startFeature() {
         image = r.createScreenCapture(new Rectangle(screenDimension));
     }

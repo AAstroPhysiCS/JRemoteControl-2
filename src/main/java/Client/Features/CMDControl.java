@@ -6,6 +6,11 @@ public class CMDControl extends Feature {
     }
 
     @Override
+    public void stopFeature() {
+
+    }
+
+    @Override
     public void startFeature() {
 
     }

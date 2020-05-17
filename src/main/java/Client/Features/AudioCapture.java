@@ -7,6 +7,11 @@ public class AudioCapture extends Feature {
     }
 
     @Override
+    public void stopFeature() {
+
+    }
+
+    @Override
     public void startFeature() {
 
     }

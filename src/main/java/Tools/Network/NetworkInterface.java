@@ -2,7 +2,6 @@ package Tools.Network;
 
 import Tools.Disposeable;
 
-import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -20,6 +19,7 @@ public abstract class NetworkInterface implements Disposeable {
     public static class CommandByte {
         public static final byte START_BYTE = (byte) 0x01;
         public static final byte CAMERA_BYTE = (byte) 0x02;
+        public static final byte CAMERA_BYTE_STOP = (byte) 0x11;
         public static final byte CMDCONTROL_BYTE = (byte) 0x03;
         public static final byte CHAT_BYTE = (byte)0x9;
         public static final byte DESKTOPCONTROL_BYTE = (byte) 0x04;
@@ -38,18 +38,18 @@ public abstract class NetworkInterface implements Disposeable {
         }
     }
 
-    @Override
-    public void disposeAll() {
-//        for (Feature allFeatures : supportedFeatures)
-//            allFeatures.disposeAll();
-    }
-
-    public void sleep(long time) {
+    public static void Sleep(long time) {
         try {
             Thread.sleep(time);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void disposeAll() {
+//        for (Feature allFeatures : supportedFeatures)
+//            allFeatures.disposeAll();
     }
 
     public DatagramSocket getSocket() {

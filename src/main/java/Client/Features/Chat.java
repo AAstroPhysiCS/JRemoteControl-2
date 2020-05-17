@@ -6,6 +6,11 @@ public class Chat extends Feature {
     }
 
     @Override
+    public void stopFeature() {
+
+    }
+
+    @Override
     public void startFeature() {
 
     }

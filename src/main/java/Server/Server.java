@@ -1,8 +1,8 @@
 package Server;
 
-import Handler.PacketHandler;
 import Handler.Message;
 import Handler.ObjectHandler;
+import Handler.PacketHandler;
 import Server.ClientEntity.ClientBuilder;
 import Server.ClientEntity.ClientEntity;
 import Tools.Network.NetworkInterface;
@@ -16,16 +16,16 @@ import java.util.Map;
 
 public class Server extends NetworkInterface {
 
-    private final Thread thread, threadFeatureListener;
-    private boolean running, runningFeature;
+    private final Thread thread;
+    private boolean running;
 
-    private final int BUFFER_SIZE = 10000;
+    private final int BUFFER_SIZE = 65535;
     private byte[] buffer;
 
     private final List<Integer> allClientId = new ArrayList<>();    //for checking
     private final List<ClientEntity> allClients = new ArrayList<>();
 
-    private final PacketHandler clientPacketHandler, featurePacketHandler;
+    private final PacketHandler clientPacketHandler;
     private final ObjectHandler<Message<?>> objectHandler;
 
     public Server(int PORT) throws SocketException {
@@ -33,20 +33,12 @@ public class Server extends NetworkInterface {
         socket = new DatagramSocket(PORT, address);
 
         clientPacketHandler = new PacketHandler(socket);
-        featurePacketHandler = new PacketHandler(socket);
         objectHandler = new ObjectHandler<>();
 
         thread = new Thread(clientListener(), "Server Thread");
-        threadFeatureListener = new Thread(featureListener(), "Feature Thread");
-
         running = true;
-        runningFeature = true;
-
         thread.setDaemon(true);
-        threadFeatureListener.setDaemon(true);
-
         thread.start();
-        threadFeatureListener.start();
     }
 
     private Runnable clientListener() {
@@ -60,11 +52,12 @@ public class Server extends NetworkInterface {
 
                     Message<?> currentInfo = objectHandler.readObjects(buffer);
                     String[] infoOuter = null;
-                    if(currentInfo.get() instanceof String[] s){
+                    if (currentInfo.get() instanceof String[] s) {
                         infoOuter = s;
                     }
 
-                    assert infoOuter != null;
+                    if (infoOuter == null) continue;
+
                     if (Byte.parseByte(infoOuter[0]) == CommandByte.START_BYTE) {
                         int id = Integer.parseInt(infoOuter[1]);
                         if (!allClientId.contains(id)) {
@@ -93,8 +86,8 @@ public class Server extends NetworkInterface {
                             }
 
                             clientPacketHandler.send(new byte[]{CommandByte.INFO_ACHIEVED_BYTE}, 1, clientPacketHandler.getPacketAddress(), clientPacketHandler.getPacketPort());
-
                             System.out.println("Client info achieved!");
+
                             assert env != null && info != null;
                             allClients.add(new ClientBuilder.ClientBuilderTemplate()
                                     .setId(id)
@@ -105,39 +98,27 @@ public class Server extends NetworkInterface {
                                     .build());
                         }
                     }
-                    sleep(1000 / 60);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                Sleep(1000 / 60);
             }
         };
     }
 
-    private Runnable featureListener() {
-        return () -> {
-            while(runningFeature){
-                
-            }
-        };
-    }
-
-    public ObjectHandler<Message<?>> getObjectHandler() {
-        return objectHandler;
-    }
-
-    public PacketHandler getFeaturePacketHandler() {
-        return featurePacketHandler;
-    }
 
     public List<ClientEntity> getAllClients() {
         return allClients;
+    }
+
+    public byte[] getBuffer() {
+        return buffer;
     }
 
     @Override
     public void disposeAll() {
         socket.close();
         running = false;
-        runningFeature = false;
         super.disposeAll();
     }
 }

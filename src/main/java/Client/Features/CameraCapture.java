@@ -1,5 +1,7 @@
 package Client.Features;
 
+import Handler.Message;
+import Handler.ObjectHandler;
 import Handler.PacketHandler;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -22,12 +24,14 @@ public class CameraCapture extends Feature {
     private final int index;
 
     private final PacketHandler packetHandler;
+    private final ObjectHandler<Message<?>> objectHandler;
 
     public CameraCapture(final int index, PacketHandler packetHandler) {
         this.packetHandler = packetHandler;
         this.index = index;
         videoCapture = new VideoCapture();
         cam_Mat = new Mat();
+        objectHandler = new ObjectHandler<>();
     }
 
     public void open() {
@@ -43,11 +47,12 @@ public class CameraCapture extends Feature {
         return image;
     }
 
-    public byte[] getImageAsByteArray() {
+    public Message<byte[]> getImageAsByteArray() {
         BufferedImage image = convertToBufferedImage(cam_Mat);
         try (ByteArrayOutputStream ous = new ByteArrayOutputStream()) {
             ImageIO.write(image, "jpg", ous);
-            return ous.toByteArray();
+            byte[] data = ous.toByteArray();
+            return () -> data;
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -55,21 +60,28 @@ public class CameraCapture extends Feature {
     }
 
     @Override
+    public void stopFeature() {
+        running = false;
+    }
+
+    @Override
     public void startFeature() {
         if (!videoCapture.isOpened())
             throw new NullPointerException("Cam could not be opened!");
-        thread.start();
+        running = true;
+        thread.execute(run());
     }
 
     @Override
     protected Runnable run() {
         return () -> {
-            while(thread.isAlive()) {
+            while (running) {
                 boolean success = videoCapture.read(cam_Mat);
                 if (!success)
                     throw new NullPointerException("Frame can not be processed!");
-                byte[] data = getImageAsByteArray();
+                Message<byte[]> dataMessage = getImageAsByteArray();
                 try {
+                    byte[] data = objectHandler.writeObjects(dataMessage);
                     packetHandler.send(data, data.length, packetHandler.getAddress(), packetHandler.getPort());
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -80,11 +92,7 @@ public class CameraCapture extends Feature {
 
     @Override
     public void disposeAll() {
-        try {
-            thread.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        thread.shutdown();
         cam_Mat.release();
         videoCapture.release();
     }

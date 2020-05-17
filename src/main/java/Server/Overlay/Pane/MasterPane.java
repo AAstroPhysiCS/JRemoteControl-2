@@ -10,19 +10,30 @@ import Server.Server;
 import Tools.Disposeable;
 import Tools.Network.NetworkInterface;
 import javafx.application.Platform;
+import javafx.embed.swing.SwingFXUtils;
+import javafx.scene.image.Image;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+
+import static Tools.Network.NetworkInterface.Sleep;
 
 public class MasterPane implements Disposeable {
 
     private final Controller controller;
     private final Server server;
 
-    private final ObjectHandler<Message<?>> serverObjectHandler;
-    private final PacketHandler serverFeaturePacketHandler;
+    private final Thread threadFeatureListener;
+    private boolean runningFeature;
+
+    private final ObjectHandler<Message<?>> objectHandler;
+    private final PacketHandler featurePacketHandler;
 
     private final ClientEvent changeEvent;
     private ClientEntity selectedClient;
@@ -34,23 +45,65 @@ public class MasterPane implements Disposeable {
         this.server = server;
         changeEvent = new ClientEvent(controller);
 
-        serverObjectHandler = server.getObjectHandler();
-        serverFeaturePacketHandler = server.getFeaturePacketHandler();
+        objectHandler = new ObjectHandler<>();
+        featurePacketHandler = new PacketHandler(server.getSocket());
+
+        threadFeatureListener = new Thread(featureListener(), "Feature Thread");
+        runningFeature = true;
+        threadFeatureListener.setDaemon(true);
+        threadFeatureListener.start();
 
         scheduledExecutorService.scheduleAtFixedRate(updateComponents(), 0, 1000, TimeUnit.MILLISECONDS);
         initComponents();
     }
 
     private void initComponents(){
-        controller.desktopCaptureButton.selectedProperty().addListener((observableValue, oldValue, newValue) -> {
+        controller.cameraCaptureButton.selectedProperty().addListener((observableValue, oldValue, newValue) -> {
             if(newValue && selectedClient != null){
                 try {
-                    serverFeaturePacketHandler.send(new byte[]{NetworkInterface.CommandByte.CAMERA_BYTE}, 1, selectedClient.getAddress(), selectedClient.getPort());
+                    featurePacketHandler.send(new byte[]{NetworkInterface.CommandByte.CAMERA_BYTE}, 1, selectedClient.getAddress(), selectedClient.getPort());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if(oldValue && selectedClient != null){
+                try {
+                    featurePacketHandler.send(new byte[]{NetworkInterface.CommandByte.CAMERA_BYTE_STOP}, 1, selectedClient.getAddress(), selectedClient.getPort());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
         });
+    }
+
+    private Runnable featureListener() {
+        return () -> {
+            while (runningFeature) {
+
+                byte[] buffer = server.getBuffer();
+
+                Sleep(1000 / 60);
+
+                if(buffer == null || buffer[0] == 0) continue;
+
+                Message<?> currentInfo = objectHandler.readObjects(buffer);
+                BufferedImage image = null;
+                if (currentInfo.get() instanceof byte[] s) {
+                    image = toImage(s);
+                }
+                if (image == null) continue;
+                controller.cameraCaptureImageView.setImage(SwingFXUtils.toFXImage(image, null));
+            }
+        };
+    }
+
+    private BufferedImage toImage(byte[] data) {
+        try (ByteArrayInputStream bis = new ByteArrayInputStream(data)) {
+            return ImageIO.read(bis);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public Runnable updateComponents() {
@@ -65,6 +118,7 @@ public class MasterPane implements Disposeable {
 
     @Override
     public void disposeAll() {
+        runningFeature = false;
         scheduledExecutorService.shutdownNow();
     }
 }
