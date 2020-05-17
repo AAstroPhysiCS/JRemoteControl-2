@@ -8,6 +8,7 @@ module JRemoteControl2 {
     requires javafx.graphics;
     requires opencv;
     requires java.net.http;
+    requires thumbnailator;
 
     exports Events to javafx.fxml;
     exports Server.ClientEntity to javafx.fxml;

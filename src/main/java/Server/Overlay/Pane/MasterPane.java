@@ -1,11 +1,12 @@
 package Server.Overlay.Pane;
 
-import Handler.PacketHandler;
 import Handler.Message;
 import Handler.ObjectHandler;
+import Handler.PacketHandler;
 import Server.ClientEntity.ClientEntity;
 import Server.ClientEntity.ClientEvent;
 import Server.Overlay.Controller.Controller;
+import Server.Overlay.GraphicsConfigurator;
 import Server.Server;
 import Tools.Disposeable;
 import Tools.Network.NetworkInterface;
@@ -17,7 +18,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -92,7 +93,13 @@ public class MasterPane implements Disposeable {
                     image = toImage(s);
                 }
                 if (image == null) continue;
-                controller.cameraCaptureImageView.setImage(SwingFXUtils.toFXImage(image, null));
+
+                controller.cameraCaptureImageView.setPreserveRatio(false);
+                final int width = (int)controller.cameraCapturePane.getPrefWidth();
+                final int height = (int)controller.cameraCapturePane.getPrefHeight();
+                Image imageFX = SwingFXUtils.toFXImage(Objects.requireNonNull(GraphicsConfigurator.resize(image, width, height)), null);
+                controller.cameraCaptureImageView.setImage(imageFX);
+                controller.cameraCaptureExpandImageView.setImage(imageFX);
             }
         };
     }

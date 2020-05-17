@@ -12,7 +12,7 @@
          <children>
             <AnchorPane fx:id="desktopCapturePane" layoutX="26.0" layoutY="43.0" prefHeight="221.0" prefWidth="254.0">
                <children>
-                  <ImageView fx:id="desktopCaptureImageView" fitHeight="221.0" fitWidth="254.0" layoutY="-3.0" pickOnBounds="true" preserveRatio="true" />
+                  <ImageView fx:id="desktopCaptureImageView" fitHeight="230.0" fitWidth="256.0" layoutY="-3.0" pickOnBounds="true" preserveRatio="true" />
                </children>
             </AnchorPane>
             <CheckBox fx:id="desktopCaptureButton" layoutX="89.0" layoutY="17.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="129.0" text="Desktop Capture">
@@ -66,7 +66,8 @@
             </CheckBox>
             <AnchorPane fx:id="cameraCapturePane" layoutX="27.0" layoutY="312.0" prefHeight="221.0" prefWidth="254.0">
                <children>
-                  <ImageView fx:id="cameraCaptureImageView" fitHeight="221.0" fitWidth="254.0" layoutX="2.0" layoutY="1.0" pickOnBounds="true" preserveRatio="true" />
+                  <ImageView fx:id="cameraCaptureImageView" fitHeight="230.0" fitWidth="256.0" layoutX="2.0" layoutY="1.0" pickOnBounds="true" preserveRatio="true" />
+                  <Button fx:id="cameraCaptureExpandButton" layoutX="105.0" layoutY="99.0" mnemonicParsing="false" prefHeight="19.0" prefWidth="11.0" />
                </children>
             </AnchorPane>
             <CheckBox fx:id="textControlButton" layoutX="365.0" layoutY="287.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="112.0" text="Text Control">
