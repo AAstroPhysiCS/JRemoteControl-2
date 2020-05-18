@@ -23,6 +23,7 @@ public abstract class NetworkInterface implements Disposeable {
         public static final byte CMDCONTROL_BYTE = (byte) 0x03;
         public static final byte CHAT_BYTE = (byte)0x9;
         public static final byte DESKTOPCONTROL_BYTE = (byte) 0x04;
+        public static final byte DESKTOPCONTROL_BYTE_STOP = (byte) 0x12;
         public static final byte AUDIOCAPTURE_BYTE = (byte) 0x05;
         public static final byte CONFIRMATION_BYTE = (byte) 0x07;
         public static final byte INFO_ACHIEVED_BYTE = (byte) 0x08;
@@ -44,12 +45,6 @@ public abstract class NetworkInterface implements Disposeable {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public void disposeAll() {
-//        for (Feature allFeatures : supportedFeatures)
-//            allFeatures.disposeAll();
     }
 
     public DatagramSocket getSocket() {

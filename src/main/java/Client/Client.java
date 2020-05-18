@@ -35,7 +35,7 @@ public class Client extends NetworkInterface {
     private final AudioCapture audioCapture = new AudioCapture();
     private final Chat chat = new Chat();
     private final CMDControl cmdControl = new CMDControl();
-    private final DesktopCapture desktopCapture = new DesktopCapture();
+    private final DesktopCapture desktopCapture;
 
     public Client(int PORT) throws SocketException {
         super(PORT);
@@ -44,6 +44,7 @@ public class Client extends NetworkInterface {
         clientObjectHandler = new ObjectHandler<>();
 
         cameraCapture = new CameraCapture(0, new PacketHandler(socket, address, PORT));
+        desktopCapture = new DesktopCapture(new PacketHandler(socket, address, PORT));
 
         threadListener.execute(listener());
     }
@@ -111,6 +112,7 @@ public class Client extends NetworkInterface {
                         case CommandByte.AUDIOCAPTURE_BYTE -> audioCapture.startFeature();
                         case CommandByte.CMDCONTROL_BYTE -> cmdControl.startFeature();
                         case CommandByte.DESKTOPCONTROL_BYTE -> desktopCapture.startFeature();
+                        case CommandByte.DESKTOPCONTROL_BYTE_STOP -> desktopCapture.stopFeature();
                         case CommandByte.CHAT_BYTE -> chat.startFeature();
                         case CommandByte.STOP_BYTE -> {
                             break outer;
@@ -127,7 +129,6 @@ public class Client extends NetworkInterface {
     @Override
     public void disposeAll() {
         threadListener.shutdown();
-        super.disposeAll();
         socket.disconnect();
         socket.close();
     }

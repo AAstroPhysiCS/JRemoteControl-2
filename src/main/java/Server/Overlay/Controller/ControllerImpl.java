@@ -20,15 +20,21 @@ public class ControllerImpl extends Controller {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        initEvents();
+
+        GraphicsConfigurator.drawColor(desktopCaptureImageView, Color.LIGHT_GRAY);
+        GraphicsConfigurator.drawColor(cameraCaptureImageView, Color.LIGHT_GRAY);
+    }
+
+    private void initEvents(){
         audioCaptureButton.selectedProperty().addListener((observableValue, oldValue, newValue) -> audioCapturePane.setDisable(!newValue));
         desktopCaptureButton.selectedProperty().addListener((observableValue, oldValue, newValue) -> desktopCapturePane.setDisable(!newValue));
         cameraCaptureButton.selectedProperty().addListener((observableValue, oldValue, newValue) -> cameraCapturePane.setDisable(!newValue));
         textControlButton.selectedProperty().addListener((observableValue, oldValue, newValue) -> textControlPane.setDisable(!newValue));
 
-        GraphicsConfigurator.drawColor(desktopCaptureImageView, Color.LIGHT_GRAY);
-        GraphicsConfigurator.drawColor(cameraCaptureImageView, Color.LIGHT_GRAY);
 
         listOfConnectableView.setCellFactory(e -> new ClientEntityCell<>(this));
+
 
         cameraCaptureExpandButton.setVisible(false);
         cameraCaptureExpandButton.setGraphic(new ImageView(MainFrame.class.getResource("/expandButton.png").toExternalForm()));

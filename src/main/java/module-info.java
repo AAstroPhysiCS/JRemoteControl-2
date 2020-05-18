@@ -10,9 +10,11 @@ module JRemoteControl2 {
     requires java.net.http;
     requires thumbnailator;
 
-    exports Events to javafx.fxml;
-    exports Server.ClientEntity to javafx.fxml;
-    exports Server.Overlay.Controller to javafx.fxml;
+    exports Events;
+    exports Handler;
+    exports Server;
+    exports Server.ClientEntity;
+    exports Server.Overlay.Controller;
 
     opens Server.Overlay;
 }

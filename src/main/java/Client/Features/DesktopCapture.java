@@ -1,5 +1,7 @@
 package Client.Features;
 
+import Handler.PacketHandler;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
@@ -9,7 +11,10 @@ public class DesktopCapture extends Feature {
     private static Robot r;
     private static BufferedImage image;
 
-    public DesktopCapture() {
+    private final PacketHandler packetHandler;
+
+    public DesktopCapture(PacketHandler packetHandler) {
+        this.packetHandler = packetHandler;
         try {
             r = new Robot();
         } catch (AWTException e) {
@@ -19,21 +24,20 @@ public class DesktopCapture extends Feature {
 
     @Override
     public void stopFeature() {
-
+        running = false;
     }
 
     @Override
     public void startFeature() {
-        image = r.createScreenCapture(new Rectangle(screenDimension));
+        running = true;
+        thread.execute(run());
     }
 
     @Override
     protected Runnable run() {
-        return null;
-    }
-
-    public static BufferedImage getImage() {
-        return image;
+        return () -> {
+            image = r.createScreenCapture(new Rectangle(screenDimension));
+        };
     }
 
     @Override

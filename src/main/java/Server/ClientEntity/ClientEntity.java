@@ -1,6 +1,6 @@
 package Server.ClientEntity;
 
-import Events.Listener;
+import Events.EventListener;
 import Server.Overlay.Controller.Controller;
 
 import java.net.InetAddress;
@@ -16,7 +16,7 @@ public class ClientEntity {
     private final int port;
 
     //every cliententity has an listener
-    private final Listener<ClientEntity> event;
+    private final EventListener<ClientEntity> event;
 
     ClientEntity(Map<String, String> env, String[] info, int id, InetAddress address, int port) {
         this.env = env;
@@ -25,9 +25,9 @@ public class ClientEntity {
         this.address = address;
         this.port = port;
 
-        event = new Listener<>(this) {
+        event = new EventListener<>(this) {
             @Override
-            public boolean onFocus(Controller controller, ClientEntity e) {
+            public boolean call(Controller controller, ClientEntity e) {
                 return controller.item == e;
             }
         };
@@ -65,7 +65,7 @@ public class ClientEntity {
         return info;
     }
 
-    public Listener<ClientEntity> getEventListener() {
+    public EventListener<ClientEntity> getEventListener() {
         return event;
     }
 }

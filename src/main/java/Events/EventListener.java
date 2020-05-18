@@ -1,8 +1,14 @@
 package Events;
 
-import Server.Overlay.Controller.Controller;
+public abstract class EventListener<T> implements Listener<T> {
 
-@FunctionalInterface
-public interface EventListener<T> {
-    boolean onFocus(Controller controller, T e);
+    private final T e;
+
+    public EventListener(T e) {
+        this.e = e;
+    }
+
+    public T get() {
+        return e;
+    }
 }

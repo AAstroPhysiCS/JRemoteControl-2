@@ -119,6 +119,5 @@ public class Server extends NetworkInterface {
     public void disposeAll() {
         socket.close();
         running = false;
-        super.disposeAll();
     }
 }
