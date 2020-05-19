@@ -12,6 +12,7 @@ module JRemoteControl2 {
 
     exports Events;
     exports Handler;
+    exports Tools;
     exports Server;
     exports Server.ClientEntity;
     exports Server.Overlay.Controller;

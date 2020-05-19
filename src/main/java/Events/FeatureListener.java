@@ -1,15 +1,13 @@
 package Events;
 
-import Client.Features.Feature;
 import Handler.Message;
 import Handler.ObjectHandler;
 import Handler.PacketHandler;
 import Server.ClientEntity.ClientEntity;
 import Server.Overlay.Controller.Controller;
 import Server.Server;
+import Tools.Ref;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -41,5 +39,5 @@ public abstract class FeatureListener implements Listener<ClientEntity> {
 
     protected abstract Runnable run(Controller controller);
 
-    public abstract void initComponents(ClientEntity selectedClient);
+    public abstract void initComponents(Ref<ClientEntity> selectedClient);
 }

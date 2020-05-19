@@ -7,6 +7,7 @@ import Server.Features.CameraCaptureListener;
 import Server.Overlay.Controller.Controller;
 import Server.Server;
 import Tools.Disposeable;
+import Tools.Ref;
 import javafx.application.Platform;
 
 import java.util.concurrent.Executors;
@@ -19,6 +20,7 @@ public class MasterPane implements Disposeable {
     private final Server server;
 
     private final ClientEvent changeEvent;
+    private final Ref<ClientEntity> selectedClientRef = new Ref<>();
     private ClientEntity selectedClient;
 
     private final FeatureListener cameraCaptureListener;
@@ -34,6 +36,7 @@ public class MasterPane implements Disposeable {
 
         scheduledExecutorService.scheduleAtFixedRate(updateComponents(), 0, 1000, TimeUnit.MILLISECONDS);
 
+        cameraCaptureListener.initComponents(selectedClientRef);
     }
 
     public Runnable updateComponents() {
@@ -43,8 +46,8 @@ public class MasterPane implements Disposeable {
                 changeEvent.addListener(e.getEventListener());
             }
             selectedClient = changeEvent.call();
-            if(selectedClient != null){
-                cameraCaptureListener.initComponents(selectedClient);
+            if (selectedClient != null) {
+                selectedClientRef.setObj(selectedClient);
                 cameraCaptureListener.call(controller, selectedClient);
             }
         });

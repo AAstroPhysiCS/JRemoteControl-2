@@ -7,6 +7,7 @@ import Server.Overlay.Controller.Controller;
 import Server.Overlay.GraphicsConfigurator;
 import Server.Server;
 import Tools.Network.NetworkInterface;
+import Tools.Ref;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 
@@ -53,8 +54,9 @@ public class CameraCaptureListener extends FeatureListener {
     }
 
     @Override
-    public void initComponents(ClientEntity selectedClient) {
+    public void initComponents(Ref<ClientEntity> selectedClientSup) {
         controller.cameraCaptureButton.selectedProperty().addListener((observableValue, oldValue, newValue) -> {
+            ClientEntity selectedClient = selectedClientSup.obj;
             if(newValue && selectedClient != null){
                 try {
                     packetHandler.send(new byte[]{NetworkInterface.CommandByte.CAMERA_BYTE}, 1, selectedClient.getAddress(), selectedClient.getPort());
