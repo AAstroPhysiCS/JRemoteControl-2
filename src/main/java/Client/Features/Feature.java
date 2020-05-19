@@ -1,5 +1,8 @@
 package Client.Features;
 
+import Handler.Message;
+import Handler.ObjectHandler;
+import Handler.PacketHandler;
 import Tools.Disposeable;
 
 import java.util.concurrent.ExecutorService;
@@ -10,7 +13,13 @@ public abstract class Feature implements Disposeable {
     protected final ExecutorService thread = Executors.newSingleThreadScheduledExecutor();
     protected boolean running = false;
 
-    public Feature() {}
+    protected final ObjectHandler<Message<?>> objectHandler;
+    protected final PacketHandler packetHandler;
+
+    public Feature(PacketHandler packetHandler) {
+        this.packetHandler = packetHandler;
+        objectHandler = new ObjectHandler<>();
+    }
 
     public abstract void stopFeature();
 

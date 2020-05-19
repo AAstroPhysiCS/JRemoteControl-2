@@ -13,6 +13,7 @@ public abstract class Controller implements Initializable {
     public ImageView desktopCaptureImageView, cameraCaptureImageView;
 
     public ImageView cameraCaptureExpandImageView = new ImageView();
+    public ImageView desktopCaptureExpandImageView = new ImageView();
 
     @FXML
     public Slider volumeSlider;
@@ -36,7 +37,7 @@ public abstract class Controller implements Initializable {
     public Label statusLabel;
 
     @FXML
-    public Button cameraCaptureExpandButton;
+    public Button cameraCaptureExpandButton, desktopCaptureExpandButton;
 
     public ClientEntity item;
 

@@ -1,10 +1,11 @@
 package Server.Overlay.Controller;
 
 import Server.ClientEntity.Cell.ClientEntityCell;
-import Server.Overlay.GraphicsConfigurator;
 import Server.Overlay.MainFrame;
+import Tools.GraphicsConfigurator;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
@@ -34,26 +35,30 @@ public class ControllerImpl extends Controller {
 
 
         listOfConnectableView.setCellFactory(e -> new ClientEntityCell<>(this));
+        makeExpandable(cameraCaptureExpandButton, cameraCaptureImageView, cameraCaptureExpandImageView);
+        makeExpandable(desktopCaptureExpandButton, desktopCaptureImageView, desktopCaptureExpandImageView);
+    }
 
+    private void makeExpandable(Button button, ImageView imageView, ImageView expandImageView){
+        button.setVisible(false);
+        button.setGraphic(new ImageView(MainFrame.class.getResource("/expandButton.png").toExternalForm()));
+        button.setOpacity(0.8d);
 
-        cameraCaptureExpandButton.setVisible(false);
-        cameraCaptureExpandButton.setGraphic(new ImageView(MainFrame.class.getResource("/expandButton.png").toExternalForm()));
-        cameraCaptureExpandButton.setOpacity(0.8d);
+        imageView.setOnMouseEntered(mouseEvent -> button.setVisible(true));
+        imageView.setOnMouseExited(mouseEvent -> button.setVisible(false));
+        button.setOnMouseEntered(mouseEvent -> button.setVisible(true));
+        button.setOnMouseExited(mouseEvent -> button.setVisible(false));
 
-        cameraCaptureImageView.setOnMouseEntered(mouseEvent -> cameraCaptureExpandButton.setVisible(true));
-        cameraCaptureImageView.setOnMouseExited(mouseEvent -> cameraCaptureExpandButton.setVisible(false));
-        cameraCaptureExpandButton.setOnMouseEntered(mouseEvent -> cameraCaptureExpandButton.setVisible(true));
-        cameraCaptureExpandButton.setOnMouseExited(mouseEvent -> cameraCaptureExpandButton.setVisible(false));
-
-        cameraCaptureExpandButton.setOnMouseClicked(mouseEvent -> {
+        button.setOnMouseClicked(mouseEvent -> {
             Group group = new Group();
             Scene scene = new Scene(group);
 
-            group.getChildren().add(cameraCaptureExpandImageView);
+            group.getChildren().add(expandImageView);
 
             Stage stage = new Stage();
-            stage.widthProperty().addListener((observableValue, number, t1) -> cameraCaptureExpandImageView.setFitWidth((Double) t1));
-            stage.heightProperty().addListener((observableValue, number, t1) -> cameraCaptureExpandImageView.setFitHeight((Double) t1));
+
+            stage.widthProperty().addListener((observableValue, number, t1) -> expandImageView.setFitWidth((Double) t1));
+            stage.heightProperty().addListener((observableValue, number, t1) -> expandImageView.setFitHeight((Double) t1));
             stage.setScene(scene);
             stage.show();
         });

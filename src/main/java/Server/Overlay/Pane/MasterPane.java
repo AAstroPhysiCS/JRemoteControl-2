@@ -3,11 +3,11 @@ package Server.Overlay.Pane;
 import Events.FeatureListener;
 import Server.ClientEntity.ClientEntity;
 import Server.ClientEntity.ClientEvent;
-import Server.Features.CameraCaptureListener;
+import Server.FeatureListener.CameraCaptureListener;
+import Server.FeatureListener.DesktopCaptureListener;
 import Server.Overlay.Controller.Controller;
 import Server.Server;
 import Tools.Disposeable;
-import Tools.Ref;
 import javafx.application.Platform;
 
 import java.util.concurrent.Executors;
@@ -20,23 +20,23 @@ public class MasterPane implements Disposeable {
     private final Server server;
 
     private final ClientEvent changeEvent;
-    private final Ref<ClientEntity> selectedClientRef = new Ref<>();
     private ClientEntity selectedClient;
 
     private final FeatureListener cameraCaptureListener;
+    private final FeatureListener desktopCaptureListener;
 
     private static final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
 
     public MasterPane(Controller controller, Server server) {
         this.controller = controller;
         this.server = server;
+
         changeEvent = new ClientEvent(controller);
 
         cameraCaptureListener = new CameraCaptureListener(controller, server);
+        desktopCaptureListener = new DesktopCaptureListener(controller, server);
 
-        scheduledExecutorService.scheduleAtFixedRate(updateComponents(), 0, 1000, TimeUnit.MILLISECONDS);
-
-        cameraCaptureListener.initComponents(selectedClientRef);
+        scheduledExecutorService.scheduleAtFixedRate(updateComponents(), 0, 500, TimeUnit.MILLISECONDS);
     }
 
     public Runnable updateComponents() {
@@ -47,14 +47,14 @@ public class MasterPane implements Disposeable {
             }
             selectedClient = changeEvent.call();
             if (selectedClient != null) {
-                selectedClientRef.setObj(selectedClient);
                 cameraCaptureListener.call(controller, selectedClient);
+                desktopCaptureListener.call(controller, selectedClient);
             }
         });
     }
 
     @Override
     public void disposeAll() {
-        scheduledExecutorService.shutdownNow();
+        scheduledExecutorService.shutdown();
     }
 }

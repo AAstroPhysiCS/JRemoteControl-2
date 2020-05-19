@@ -6,12 +6,13 @@ import Handler.PacketHandler;
 import Server.ClientEntity.ClientEntity;
 import Server.Overlay.Controller.Controller;
 import Server.Server;
+import Tools.Disposeable;
 import Tools.Ref;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public abstract class FeatureListener implements Listener<ClientEntity> {
+public abstract class FeatureListener implements Listener<ClientEntity>, Disposeable {
 
     protected final Controller controller;
     protected final Server server;
@@ -23,21 +24,25 @@ public abstract class FeatureListener implements Listener<ClientEntity> {
     protected final ObjectHandler<Message<?>> objectHandler;
     protected final PacketHandler packetHandler;
 
+    private final Ref<ClientEntity> reference = new Ref<>();
+
     public FeatureListener(Controller controller, Server server) {
         this.controller = controller;
         this.server = server;
         objectHandler = new ObjectHandler<>();
         packetHandler = new PacketHandler(server.getSocket());
+        initComponents(reference);
     }
 
     @Override
     public boolean call(Controller controller, ClientEntity e) {
+        reference.setObj(e);
         runningFeature = true;
         thread.execute(run(controller));
-        return false;
+        return true;
     }
 
     protected abstract Runnable run(Controller controller);
 
-    public abstract void initComponents(Ref<ClientEntity> selectedClient);
+    protected abstract void initComponents(Ref<ClientEntity> selectedClient);
 }

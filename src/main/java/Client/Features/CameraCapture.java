@@ -1,7 +1,6 @@
 package Client.Features;
 
 import Handler.Message;
-import Handler.ObjectHandler;
 import Handler.PacketHandler;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -23,15 +22,11 @@ public class CameraCapture extends Feature {
     private final VideoCapture videoCapture;
     private final int index;
 
-    private final PacketHandler packetHandler;
-    private final ObjectHandler<Message<?>> objectHandler;
-
     public CameraCapture(final int index, PacketHandler packetHandler) {
-        this.packetHandler = packetHandler;
+        super(packetHandler);
         this.index = index;
         videoCapture = new VideoCapture();
         cam_Mat = new Mat();
-        objectHandler = new ObjectHandler<>();
     }
 
     public void open() {
@@ -47,8 +42,7 @@ public class CameraCapture extends Feature {
         return image;
     }
 
-    public Message<byte[]> getImageAsByteArray() {
-        BufferedImage image = convertToBufferedImage(cam_Mat);
+    public Message<byte[]> getImageAsByteArray(BufferedImage image) {
         try (ByteArrayOutputStream ous = new ByteArrayOutputStream()) {
             ImageIO.write(image, "jpg", ous);
             byte[] data = ous.toByteArray();
@@ -79,7 +73,7 @@ public class CameraCapture extends Feature {
                 boolean success = videoCapture.read(cam_Mat);
                 if (!success)
                     throw new NullPointerException("Frame can not be processed!");
-                Message<byte[]> dataMessage = getImageAsByteArray();
+                Message<byte[]> dataMessage = getImageAsByteArray(convertToBufferedImage(cam_Mat));
                 try {
                     byte[] data = objectHandler.writeObjects(dataMessage);
                     packetHandler.send(data, data.length, packetHandler.getAddress(), packetHandler.getPort());

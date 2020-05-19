@@ -1,21 +1,18 @@
-package Server.Features;
+package Server.FeatureListener;
 
 import Events.FeatureListener;
 import Handler.Message;
 import Server.ClientEntity.ClientEntity;
 import Server.Overlay.Controller.Controller;
-import Server.Overlay.GraphicsConfigurator;
 import Server.Server;
+import Tools.GraphicsConfigurator;
 import Tools.Network.NetworkInterface;
 import Tools.Ref;
-import javafx.embed.swing.SwingFXUtils;
-import javafx.scene.image.Image;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.Objects;
 
 import static Tools.Network.NetworkInterface.Sleep;
 
@@ -46,9 +43,12 @@ public class CameraCaptureListener extends FeatureListener {
                 controller.cameraCaptureImageView.setPreserveRatio(false);
                 final int width = (int)controller.cameraCapturePane.getPrefWidth();
                 final int height = (int)controller.cameraCapturePane.getPrefHeight();
-                Image imageFX = SwingFXUtils.toFXImage(Objects.requireNonNull(GraphicsConfigurator.resize(image, width, height)), null);
-                controller.cameraCaptureImageView.setImage(imageFX);
-                controller.cameraCaptureExpandImageView.setImage(imageFX);
+                controller.cameraCaptureImageView.setImage(GraphicsConfigurator.resize(image, width, height));
+
+                final int widthExpand = (int) controller.cameraCaptureExpandImageView.getFitWidth();
+                final int heightExpand = (int) controller.cameraCaptureExpandImageView.getFitHeight();
+                if(widthExpand > 0 && heightExpand > 0)
+                    controller.cameraCaptureExpandImageView.setImage(GraphicsConfigurator.resize(image, widthExpand, heightExpand));
             }
         };
     }
@@ -81,5 +81,11 @@ public class CameraCaptureListener extends FeatureListener {
             e.printStackTrace();
         }
         return null;
+    }
+
+    @Override
+    public void disposeAll() {
+        runningFeature = false;
+        thread.shutdown();
     }
 }

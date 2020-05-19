@@ -1,8 +1,11 @@
 package Client.Features;
 
+import Handler.PacketHandler;
+
 public class Chat extends Feature {
 
-    public Chat() {
+    public Chat(PacketHandler packetHandler) {
+        super(packetHandler);
     }
 
     @Override

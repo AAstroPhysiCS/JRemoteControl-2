@@ -1,8 +1,11 @@
 package Client.Features;
 
+import Handler.PacketHandler;
+
 public class CMDControl extends Feature {
 
-    public CMDControl() {
+    public CMDControl(PacketHandler packetHandler) {
+        super(packetHandler);
     }
 
     @Override

@@ -1,8 +1,11 @@
 package Client.Features;
 
+import Handler.PacketHandler;
+
 public class AudioCapture extends Feature {
 
-    public AudioCapture() {
+    public AudioCapture(PacketHandler packetHandler) {
+        super(packetHandler);
 
     }
 

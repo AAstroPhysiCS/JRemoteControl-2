@@ -32,9 +32,9 @@ public class Client extends NetworkInterface {
     private final ObjectHandler<Message<?>> clientObjectHandler;
 
     private final CameraCapture cameraCapture;
-    private final AudioCapture audioCapture = new AudioCapture();
-    private final Chat chat = new Chat();
-    private final CMDControl cmdControl = new CMDControl();
+//    private final AudioCapture audioCapture = new AudioCapture();
+//    private final Chat chat = new Chat();
+//    private final CMDControl cmdControl = new CMDControl();
     private final DesktopCapture desktopCapture;
 
     public Client(int PORT) throws SocketException {
@@ -109,11 +109,11 @@ public class Client extends NetworkInterface {
                             cameraCapture.startFeature();
                         }
                         case CommandByte.CAMERA_BYTE_STOP -> cameraCapture.stopFeature();
-                        case CommandByte.AUDIOCAPTURE_BYTE -> audioCapture.startFeature();
-                        case CommandByte.CMDCONTROL_BYTE -> cmdControl.startFeature();
+//                        case CommandByte.AUDIOCAPTURE_BYTE -> audioCapture.startFeature();
+//                        case CommandByte.CMDCONTROL_BYTE -> cmdControl.startFeature();
                         case CommandByte.DESKTOPCONTROL_BYTE -> desktopCapture.startFeature();
                         case CommandByte.DESKTOPCONTROL_BYTE_STOP -> desktopCapture.stopFeature();
-                        case CommandByte.CHAT_BYTE -> chat.startFeature();
+//                        case CommandByte.CHAT_BYTE -> chat.startFeature();
                         case CommandByte.STOP_BYTE -> {
                             break outer;
                         }
