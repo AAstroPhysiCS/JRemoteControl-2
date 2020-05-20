@@ -24,6 +24,8 @@ public abstract class FeatureListener implements Listener<ClientEntity>, Dispose
     protected final ObjectHandler<Message<?>> objectHandler;
     protected final PacketHandler packetHandler;
 
+    protected boolean idReceived = false;
+
     private final Ref<ClientEntity> reference = new Ref<>();
 
     public FeatureListener(Controller controller, Server server) {

@@ -21,6 +21,13 @@ public abstract class Feature implements Disposeable {
         objectHandler = new ObjectHandler<>();
     }
 
+    public byte[] modifyArray(byte[] arr, byte id) {
+        byte[] arrNew = new byte[arr.length + 1];
+        System.arraycopy(arr, 0, arrNew, 1, arr.length);
+        arrNew[0] = id;
+        return arrNew;
+    }
+
     public abstract void stopFeature();
 
     public abstract void startFeature();

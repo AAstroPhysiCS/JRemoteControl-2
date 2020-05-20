@@ -2,6 +2,7 @@ package Client.Features;
 
 import Handler.Message;
 import Handler.PacketHandler;
+import Tools.Network.NetworkInterface;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.videoio.VideoCapture;
@@ -76,7 +77,8 @@ public class CameraCapture extends Feature {
                 Message<byte[]> dataMessage = getImageAsByteArray(convertToBufferedImage(cam_Mat));
                 try {
                     byte[] data = objectHandler.writeObjects(dataMessage);
-                    packetHandler.send(data, data.length, packetHandler.getAddress(), packetHandler.getPort());
+                    byte[] dataWithId = modifyArray(data, NetworkInterface.CommandByte.CAMERA_BYTE);
+                    packetHandler.send(dataWithId, dataWithId.length, packetHandler.getAddress(), packetHandler.getPort());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

@@ -13,6 +13,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.AbstractMap;
 
 import static Tools.Network.NetworkInterface.Sleep;
 
@@ -32,7 +33,10 @@ public class DesktopCaptureListener extends FeatureListener {
 
                 if (buffer == null || buffer[0] == 0) continue;
 
-                Message<?> currentInfo = objectHandler.readObjects(buffer);
+                AbstractMap.SimpleEntry<Byte, Message<?>> abstractMap = objectHandler.readModifiedObjects(buffer);
+                if(abstractMap.getKey() != NetworkInterface.CommandByte.DESKTOPCONTROL_BYTE) continue;
+
+                Message<byte[]> currentInfo = (Message<byte[]>) abstractMap.getValue();
                 BufferedImage desktopImage = null;
                 if (currentInfo.get() instanceof byte[] s) {
                     desktopImage = toImage(s);
@@ -40,13 +44,13 @@ public class DesktopCaptureListener extends FeatureListener {
                 if (desktopImage == null) continue;
 
                 controller.desktopCaptureImageView.setPreserveRatio(false);
-                final int width = (int)controller.desktopCapturePane.getPrefWidth();
-                final int height = (int)controller.desktopCapturePane.getPrefHeight();
+                final int width = (int) controller.desktopCapturePane.getPrefWidth();
+                final int height = (int) controller.desktopCapturePane.getPrefHeight();
                 controller.desktopCaptureImageView.setImage(GraphicsConfigurator.resize(desktopImage, width, height));
 
                 final int widthExpand = (int) controller.desktopCaptureExpandImageView.getFitWidth();
                 final int heightExpand = (int) controller.desktopCaptureExpandImageView.getFitHeight();
-                if(widthExpand > 0 && heightExpand > 0)
+                if (widthExpand > 0 && heightExpand > 0)
                     controller.desktopCaptureExpandImageView.setImage(GraphicsConfigurator.resize(desktopImage, widthExpand, heightExpand));
             }
         };
@@ -56,14 +60,14 @@ public class DesktopCaptureListener extends FeatureListener {
     public void initComponents(Ref<ClientEntity> selectedClientSup) {
         controller.desktopCaptureButton.selectedProperty().addListener((observableValue, oldValue, newValue) -> {
             ClientEntity selectedClient = selectedClientSup.obj;
-            if(newValue && selectedClient != null){
+            if (newValue && selectedClient != null) {
                 try {
                     packetHandler.send(new byte[]{NetworkInterface.CommandByte.DESKTOPCONTROL_BYTE}, 1, selectedClient.getAddress(), selectedClient.getPort());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
-            if(oldValue && selectedClient != null){
+            if (oldValue && selectedClient != null) {
                 try {
                     packetHandler.send(new byte[]{NetworkInterface.CommandByte.DESKTOPCONTROL_BYTE_STOP}, 1, selectedClient.getAddress(), selectedClient.getPort());
                 } catch (IOException e) {

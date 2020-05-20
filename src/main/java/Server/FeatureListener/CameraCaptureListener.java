@@ -13,6 +13,8 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.AbstractMap;
+import java.util.Arrays;
 
 import static Tools.Network.NetworkInterface.Sleep;
 
@@ -31,9 +33,12 @@ public class CameraCaptureListener extends FeatureListener {
 
                 Sleep(1000 / 60);
 
-                if(buffer == null || buffer[0] == 0) continue;
+                if (buffer == null || buffer[0] == 0) continue;
 
-                Message<?> currentInfo = objectHandler.readObjects(buffer);
+                AbstractMap.SimpleEntry<Byte, Message<?>> abstractMap = objectHandler.readModifiedObjects(buffer);
+                if(abstractMap.getKey() != NetworkInterface.CommandByte.CAMERA_BYTE) continue;
+
+                Message<byte[]> currentInfo = (Message<byte[]>) abstractMap.getValue();
                 BufferedImage image = null;
                 if (currentInfo.get() instanceof byte[] s) {
                     image = toImage(s);
@@ -41,14 +46,15 @@ public class CameraCaptureListener extends FeatureListener {
                 if (image == null) continue;
 
                 controller.cameraCaptureImageView.setPreserveRatio(false);
-                final int width = (int)controller.cameraCapturePane.getPrefWidth();
-                final int height = (int)controller.cameraCapturePane.getPrefHeight();
+                final int width = (int) controller.cameraCapturePane.getPrefWidth();
+                final int height = (int) controller.cameraCapturePane.getPrefHeight();
                 controller.cameraCaptureImageView.setImage(GraphicsConfigurator.resize(image, width, height));
 
                 final int widthExpand = (int) controller.cameraCaptureExpandImageView.getFitWidth();
                 final int heightExpand = (int) controller.cameraCaptureExpandImageView.getFitHeight();
-                if(widthExpand > 0 && heightExpand > 0)
+                if (widthExpand > 0 && heightExpand > 0)
                     controller.cameraCaptureExpandImageView.setImage(GraphicsConfigurator.resize(image, widthExpand, heightExpand));
+                idReceived = false;
             }
         };
     }
@@ -57,14 +63,14 @@ public class CameraCaptureListener extends FeatureListener {
     public void initComponents(Ref<ClientEntity> selectedClientSup) {
         controller.cameraCaptureButton.selectedProperty().addListener((observableValue, oldValue, newValue) -> {
             ClientEntity selectedClient = selectedClientSup.obj;
-            if(newValue && selectedClient != null){
+            if (newValue && selectedClient != null) {
                 try {
                     packetHandler.send(new byte[]{NetworkInterface.CommandByte.CAMERA_BYTE}, 1, selectedClient.getAddress(), selectedClient.getPort());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
-            if(oldValue && selectedClient != null){
+            if (oldValue && selectedClient != null) {
                 try {
                     packetHandler.send(new byte[]{NetworkInterface.CommandByte.CAMERA_BYTE_STOP}, 1, selectedClient.getAddress(), selectedClient.getPort());
                 } catch (IOException e) {

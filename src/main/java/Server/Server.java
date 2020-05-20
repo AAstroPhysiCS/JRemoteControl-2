@@ -51,6 +51,8 @@ public class Server extends NetworkInterface {
                     if (buffer.length == 0) continue;
 
                     Message<?> currentInfo = objectHandler.readObjects(buffer);
+                    if(currentInfo == null) continue;
+
                     String[] infoOuter = null;
                     if (currentInfo.get() instanceof String[] s) {
                         infoOuter = s;

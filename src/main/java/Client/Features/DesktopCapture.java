@@ -4,6 +4,7 @@ import Handler.Message;
 import Handler.ObjectHandler;
 import Handler.PacketHandler;
 import Tools.GraphicsConfigurator;
+import Tools.Network.NetworkInterface;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -48,11 +49,12 @@ public class DesktopCapture extends Feature {
             while (running) {
                 image = r.createScreenCapture(new Rectangle(screenDimension));
                 Sleep(1000/60);
-                BufferedImage imageResized = GraphicsConfigurator.resizeAsBufferedImage(image, 1024, 768);
+                BufferedImage imageResized = GraphicsConfigurator.resizeAsBufferedImage(image, 960, 768);
                 Message<byte[]> dataMessage = getImageAsByteArray(imageResized);
-                byte[] data = objectHandler.writeObjects(dataMessage);
                 try {
-                    packetHandler.send(data, data.length, packetHandler.getAddress(), packetHandler.getPort());
+                    byte[] data = objectHandler.writeObjects(dataMessage);
+                    byte[] dataWithId = modifyArray(data, NetworkInterface.CommandByte.DESKTOPCONTROL_BYTE);
+                    packetHandler.send(dataWithId, dataWithId.length, packetHandler.getAddress(), packetHandler.getPort());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
