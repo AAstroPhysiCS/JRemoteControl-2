@@ -22,9 +22,7 @@ public abstract class FeatureListener implements Listener<ClientEntity>, Dispose
     protected final ExecutorService thread = Executors.newSingleThreadScheduledExecutor();
 
     protected final ObjectHandler<Message<?>> objectHandler;
-    protected final PacketHandler packetHandler;
-
-    protected boolean idReceived = false;
+    protected PacketHandler packetHandler;
 
     private final Ref<ClientEntity> reference = new Ref<>();
 
@@ -37,7 +35,7 @@ public abstract class FeatureListener implements Listener<ClientEntity>, Dispose
     }
 
     @Override
-    public boolean call(Controller controller, ClientEntity e) {
+    public boolean call(ClientEntity e) {
         reference.setObj(e);
         runningFeature = true;
         thread.execute(run(controller));
@@ -46,5 +44,5 @@ public abstract class FeatureListener implements Listener<ClientEntity>, Dispose
 
     protected abstract Runnable run(Controller controller);
 
-    protected abstract void initComponents(Ref<ClientEntity> selectedClient);
+    protected abstract void initComponents(Ref<ClientEntity> selectedClientSup);
 }

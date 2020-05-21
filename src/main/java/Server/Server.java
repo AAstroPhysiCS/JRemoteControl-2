@@ -14,12 +14,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static Tools.IConstants.BUFFER_SIZE;
+
 public class Server extends NetworkInterface {
 
     private final Thread thread;
     private boolean running;
 
-    private final int BUFFER_SIZE = 65535;
     private byte[] buffer;
 
     private final List<Integer> allClientId = new ArrayList<>();    //for checking
@@ -48,7 +49,7 @@ public class Server extends NetworkInterface {
                     if (!socket.isClosed())
                         buffer = clientPacketHandler.receive(BUFFER_SIZE);
 
-                    if (buffer.length == 0) continue;
+                    if (buffer.length == 0 || objectHandler.readModifiedObjects(buffer) instanceof Message) continue;
 
                     Message<?> currentInfo = objectHandler.readObjects(buffer);
                     if(currentInfo == null) continue;
@@ -113,13 +114,17 @@ public class Server extends NetworkInterface {
         return allClients;
     }
 
-    public byte[] getBuffer() {
-        return buffer;
+    public PacketHandler getPacketHandler() {
+        return clientPacketHandler;
     }
 
     @Override
     public void disposeAll() {
         socket.close();
         running = false;
+    }
+
+    public byte[] getBuffer() {
+        return buffer;
     }
 }

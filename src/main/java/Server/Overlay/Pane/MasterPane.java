@@ -3,6 +3,7 @@ package Server.Overlay.Pane;
 import Events.FeatureListener;
 import Server.ClientEntity.ClientEntity;
 import Server.ClientEntity.ClientEvent;
+import Server.FeatureListener.CMDControlListener;
 import Server.FeatureListener.CameraCaptureListener;
 import Server.FeatureListener.DesktopCaptureListener;
 import Server.Overlay.Controller.Controller;
@@ -22,8 +23,7 @@ public class MasterPane implements Disposeable {
     private final ClientEvent changeEvent;
     private ClientEntity selectedClient;
 
-    private final FeatureListener cameraCaptureListener;
-    private final FeatureListener desktopCaptureListener;
+    private final FeatureListener cameraCaptureListener, desktopCaptureListener, cmdControlListener;
 
     private static final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
 
@@ -31,10 +31,11 @@ public class MasterPane implements Disposeable {
         this.controller = controller;
         this.server = server;
 
-        changeEvent = new ClientEvent(controller);
+        changeEvent = new ClientEvent();
 
         cameraCaptureListener = new CameraCaptureListener(controller, server);
         desktopCaptureListener = new DesktopCaptureListener(controller, server);
+        cmdControlListener = new CMDControlListener(controller, server);
 
         scheduledExecutorService.scheduleAtFixedRate(updateComponents(), 0, 500, TimeUnit.MILLISECONDS);
     }
@@ -47,8 +48,9 @@ public class MasterPane implements Disposeable {
             }
             selectedClient = changeEvent.call();
             if (selectedClient != null) {
-                cameraCaptureListener.call(controller, selectedClient);
-                desktopCaptureListener.call(controller, selectedClient);
+                desktopCaptureListener.call(selectedClient);
+                cameraCaptureListener.call(selectedClient);
+                cmdControlListener.call(selectedClient);
             }
         });
     }

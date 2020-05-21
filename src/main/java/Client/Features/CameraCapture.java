@@ -77,7 +77,7 @@ public class CameraCapture extends Feature {
                 Message<byte[]> dataMessage = getImageAsByteArray(convertToBufferedImage(cam_Mat));
                 try {
                     byte[] data = objectHandler.writeObjects(dataMessage);
-                    byte[] dataWithId = modifyArray(data, NetworkInterface.CommandByte.CAMERA_BYTE);
+                    byte[] dataWithId = objectHandler.writeModifiedArray(data, NetworkInterface.CommandByte.CAMERA_BYTE);
                     packetHandler.send(dataWithId, dataWithId.length, packetHandler.getAddress(), packetHandler.getPort());
                 } catch (IOException e) {
                     e.printStackTrace();

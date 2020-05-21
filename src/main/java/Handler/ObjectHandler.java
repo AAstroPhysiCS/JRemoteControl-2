@@ -2,21 +2,26 @@ package Handler;
 
 import Handler.Serialization.ObjectSerialization;
 
-import java.util.AbstractMap;
-
 public class ObjectHandler<V extends Message<?>> {
 
     public V readObjects(byte[] data) {
         return ObjectSerialization.deseralize(data);
     }
 
-    public AbstractMap.SimpleEntry<Byte, V> readModifiedObjects(byte[] data){
+    public V readModifiedObjects(byte[] data) {
         byte[] unModified = new byte[data.length - 1];
         System.arraycopy(data, 1, unModified, 0, unModified.length);
-        return new AbstractMap.SimpleEntry<>(data[0], ObjectSerialization.deseralize(unModified));
+        return ObjectSerialization.deseralize(unModified);
     }
 
-    public byte[] writeObjects(V obj){
+    public byte[] writeModifiedArray(byte[] arr, byte id) {
+        byte[] arrNew = new byte[arr.length + 1];
+        System.arraycopy(arr, 0, arrNew, 1, arr.length);
+        arrNew[0] = id;
+        return arrNew;
+    }
+
+    public byte[] writeObjects(V obj) {
         return ObjectSerialization.serialize(obj);
     }
 }

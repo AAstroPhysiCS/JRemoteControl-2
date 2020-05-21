@@ -1,5 +1,7 @@
 package Server.ClientEntity;
 
+import Server.Overlay.Controller.Controller;
+
 import java.net.InetAddress;
 import java.util.Map;
 

@@ -16,7 +16,7 @@ public class ClientEntity {
     private final int port;
 
     //every cliententity has an listener
-    private final EventListener<ClientEntity> event;
+    private EventListener<ClientEntity> event;
 
     ClientEntity(Map<String, String> env, String[] info, int id, InetAddress address, int port) {
         this.env = env;
@@ -24,13 +24,6 @@ public class ClientEntity {
         this.id = id;
         this.address = address;
         this.port = port;
-
-        event = new EventListener<>(this) {
-            @Override
-            public boolean call(Controller controller, ClientEntity e) {
-                return controller.item == e;
-            }
-        };
     }
 
     @Override
@@ -43,6 +36,15 @@ public class ClientEntity {
                 OS Vendor: %s
                 OS Architecture: %s
                 """.formatted(info[info.length - 1], id, info[0], info[1], info[2], info[3]).trim();
+    }
+
+    public void setController(Controller controller){
+        event = new EventListener<>(controller,this) {
+            @Override
+            public boolean call(ClientEntity e) {
+                return controller.item == e;
+            }
+        };
     }
 
     public int getId() {

@@ -21,10 +21,13 @@ public abstract class NetworkInterface implements Disposeable {
         public static final byte CAMERA_BYTE = (byte) 0x02;
         public static final byte CAMERA_BYTE_STOP = (byte) 0x11;
         public static final byte CMDCONTROL_BYTE = (byte) 0x03;
+        public static final byte CMDCONTROL_BYTE_STOP = (byte) 0x13;
         public static final byte CHAT_BYTE = (byte)0x9;
+        public static final byte CHAT_BYTE_STOP = (byte)0x14;
         public static final byte DESKTOPCONTROL_BYTE = (byte) 0x04;
         public static final byte DESKTOPCONTROL_BYTE_STOP = (byte) 0x12;
         public static final byte AUDIOCAPTURE_BYTE = (byte) 0x05;
+        public static final byte AUDIOCAPTURE_BYTE_STOP = (byte) 0x15;
         public static final byte CONFIRMATION_BYTE = (byte) 0x07;
         public static final byte INFO_ACHIEVED_BYTE = (byte) 0x08;
         public static final byte STOP_BYTE = (byte)0x10;

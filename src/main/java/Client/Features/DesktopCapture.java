@@ -1,7 +1,6 @@
 package Client.Features;
 
 import Handler.Message;
-import Handler.ObjectHandler;
 import Handler.PacketHandler;
 import Tools.GraphicsConfigurator;
 import Tools.Network.NetworkInterface;
@@ -20,11 +19,8 @@ public class DesktopCapture extends Feature {
     private static Robot r;
     private static BufferedImage image;
 
-    private final ObjectHandler<Message<?>> objectHandler;
-
     public DesktopCapture(PacketHandler packetHandler) {
         super(packetHandler);
-        objectHandler = new ObjectHandler<>();
         try {
             r = new Robot();
         } catch (AWTException e) {
@@ -49,11 +45,11 @@ public class DesktopCapture extends Feature {
             while (running) {
                 image = r.createScreenCapture(new Rectangle(screenDimension));
                 Sleep(1000/60);
-                BufferedImage imageResized = GraphicsConfigurator.resizeAsBufferedImage(image, 960, 768);
+                BufferedImage imageResized = GraphicsConfigurator.resizeAsBufferedImage(image, 800, 600);
                 Message<byte[]> dataMessage = getImageAsByteArray(imageResized);
                 try {
                     byte[] data = objectHandler.writeObjects(dataMessage);
-                    byte[] dataWithId = modifyArray(data, NetworkInterface.CommandByte.DESKTOPCONTROL_BYTE);
+                    byte[] dataWithId = objectHandler.writeModifiedArray(data, NetworkInterface.CommandByte.DESKTOPCONTROL_BYTE);
                     packetHandler.send(dataWithId, dataWithId.length, packetHandler.getAddress(), packetHandler.getPort());
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -76,5 +72,6 @@ public class DesktopCapture extends Feature {
     @Override
     public void disposeAll() {
         image.flush();
+        thread.shutdown();
     }
 }

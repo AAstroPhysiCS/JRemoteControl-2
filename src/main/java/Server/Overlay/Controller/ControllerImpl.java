@@ -33,7 +33,6 @@ public class ControllerImpl extends Controller {
         cameraCaptureButton.selectedProperty().addListener((observableValue, oldValue, newValue) -> cameraCapturePane.setDisable(!newValue));
         textControlButton.selectedProperty().addListener((observableValue, oldValue, newValue) -> textControlPane.setDisable(!newValue));
 
-
         listOfConnectableView.setCellFactory(e -> new ClientEntityCell<>(this));
         makeExpandable(cameraCaptureExpandButton, cameraCaptureImageView, cameraCaptureExpandImageView);
         makeExpandable(desktopCaptureExpandButton, desktopCaptureImageView, desktopCaptureExpandImageView);

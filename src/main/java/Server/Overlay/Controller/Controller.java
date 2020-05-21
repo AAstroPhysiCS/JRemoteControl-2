@@ -22,7 +22,7 @@ public abstract class Controller implements Initializable {
     public TextArea textAreaControl;
 
     @FXML
-    public CheckBox desktopCaptureButton, cameraCaptureButton, audioCaptureButton, textControlButton;
+    public CheckBox desktopCaptureButton, cameraCaptureButton, audioCaptureButton, textControlButton, cmdControlButton, chatControlButton;
 
     @FXML
     public TextField textFieldControl;
@@ -45,6 +45,7 @@ public abstract class Controller implements Initializable {
 
     public void addClients(ClientEntity clientEntity) {
         if (!listOfConnectableView.getItems().contains(clientEntity)) {
+            clientEntity.setController(this);
             listOfConnectableView.getItems().add(clientEntity);
         }
     }

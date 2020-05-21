@@ -14,7 +14,6 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.AbstractMap;
-import java.util.Arrays;
 
 import static Tools.Network.NetworkInterface.Sleep;
 
@@ -33,12 +32,9 @@ public class CameraCaptureListener extends FeatureListener {
 
                 Sleep(1000 / 60);
 
-                if (buffer == null || buffer[0] == 0) continue;
+                if (buffer == null || buffer[0] == 0 || buffer[0] != NetworkInterface.CommandByte.CAMERA_BYTE) continue;
 
-                AbstractMap.SimpleEntry<Byte, Message<?>> abstractMap = objectHandler.readModifiedObjects(buffer);
-                if(abstractMap.getKey() != NetworkInterface.CommandByte.CAMERA_BYTE) continue;
-
-                Message<byte[]> currentInfo = (Message<byte[]>) abstractMap.getValue();
+                Message<byte[]> currentInfo = (Message<byte[]>) objectHandler.readModifiedObjects(buffer);
                 BufferedImage image = null;
                 if (currentInfo.get() instanceof byte[] s) {
                     image = toImage(s);
@@ -54,7 +50,6 @@ public class CameraCaptureListener extends FeatureListener {
                 final int heightExpand = (int) controller.cameraCaptureExpandImageView.getFitHeight();
                 if (widthExpand > 0 && heightExpand > 0)
                     controller.cameraCaptureExpandImageView.setImage(GraphicsConfigurator.resize(image, widthExpand, heightExpand));
-                idReceived = false;
             }
         };
     }

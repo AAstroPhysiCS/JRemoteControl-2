@@ -80,8 +80,8 @@
                <children>
                   <TextField fx:id="textFieldControl" layoutX="14.0" layoutY="182.0" prefHeight="25.0" prefWidth="222.0" />
                   <TextArea fx:id="textAreaControl" editable="false" layoutX="14.0" layoutY="47.0" prefHeight="127.0" prefWidth="222.0" />
-                  <CheckBox layoutX="41.0" layoutY="23.0" mnemonicParsing="false" text="CMD" />
-                  <CheckBox layoutX="161.0" layoutY="23.0" mnemonicParsing="false" text="Chat" />
+                  <CheckBox fx:id="cmdControlButton" layoutX="41.0" layoutY="23.0" mnemonicParsing="false" text="CMD" />
+                  <CheckBox fx:id="chatControlButton" layoutX="161.0" layoutY="23.0" mnemonicParsing="false" text="Chat" />
                   <Label layoutX="89.0" layoutY="6.0" text="Select mode: " />
                </children>
             </AnchorPane>

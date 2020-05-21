@@ -31,12 +31,9 @@ public class DesktopCaptureListener extends FeatureListener {
 
                 Sleep(1000 / 60);
 
-                if (buffer == null || buffer[0] == 0) continue;
+                if (buffer == null || buffer[0] == 0 || buffer[0] != NetworkInterface.CommandByte.DESKTOPCONTROL_BYTE) continue;
 
-                AbstractMap.SimpleEntry<Byte, Message<?>> abstractMap = objectHandler.readModifiedObjects(buffer);
-                if(abstractMap.getKey() != NetworkInterface.CommandByte.DESKTOPCONTROL_BYTE) continue;
-
-                Message<byte[]> currentInfo = (Message<byte[]>) abstractMap.getValue();
+                Message<byte[]> currentInfo = (Message<byte[]>) objectHandler.readModifiedObjects(buffer);
                 BufferedImage desktopImage = null;
                 if (currentInfo.get() instanceof byte[] s) {
                     desktopImage = toImage(s);
