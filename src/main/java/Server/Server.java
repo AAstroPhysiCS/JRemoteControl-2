@@ -127,4 +127,8 @@ public class Server extends NetworkInterface {
     public byte[] getBuffer() {
         return buffer;
     }
+
+    public void resetBuffer(){
+        buffer = new byte[BUFFER_SIZE];
+    }
 }

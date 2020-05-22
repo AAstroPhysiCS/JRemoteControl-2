@@ -2,7 +2,7 @@ package Server.Overlay.Pane;
 
 import Events.FeatureListener;
 import Server.ClientEntity.ClientEntity;
-import Server.ClientEntity.ClientEvent;
+import Events.ChangeEvent;
 import Server.FeatureListener.CMDControlListener;
 import Server.FeatureListener.CameraCaptureListener;
 import Server.FeatureListener.DesktopCaptureListener;
@@ -20,7 +20,7 @@ public class MasterPane implements Disposeable {
     private final Controller controller;
     private final Server server;
 
-    private final ClientEvent changeEvent;
+    private final ChangeEvent<ClientEntity> selectChangeEvent;
     private ClientEntity selectedClient;
 
     private final FeatureListener cameraCaptureListener, desktopCaptureListener, cmdControlListener;
@@ -31,7 +31,7 @@ public class MasterPane implements Disposeable {
         this.controller = controller;
         this.server = server;
 
-        changeEvent = new ClientEvent();
+        selectChangeEvent = new ChangeEvent<>();
 
         cameraCaptureListener = new CameraCaptureListener(controller, server);
         desktopCaptureListener = new DesktopCaptureListener(controller, server);
@@ -44,13 +44,13 @@ public class MasterPane implements Disposeable {
         return () -> Platform.runLater(() -> {   //to not have exceptions...
             for (ClientEntity e : server.getAllClients()) {
                 controller.addClients(e);
-                changeEvent.addListener(e.getEventListener());
+                selectChangeEvent.addListener(e.getEventListener());
             }
-            selectedClient = changeEvent.call();
+            selectedClient = selectChangeEvent.onChange();
             if (selectedClient != null) {
-                desktopCaptureListener.call(selectedClient);
-                cameraCaptureListener.call(selectedClient);
-                cmdControlListener.call(selectedClient);
+                desktopCaptureListener.listen(selectedClient);
+                cameraCaptureListener.listen(selectedClient);
+                cmdControlListener.listen(selectedClient);
             }
         });
     }

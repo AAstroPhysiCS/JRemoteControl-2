@@ -76,13 +76,14 @@
                   <Font size="14.0" />
                </font>
             </CheckBox>
-            <AnchorPane fx:id="textControlPane" disable="true" layoutX="294.0" layoutY="312.0" prefHeight="221.0" prefWidth="254.0">
+            <AnchorPane fx:id="textControlPane" disable="true" layoutX="294.0" layoutY="312.0" prefHeight="249.0" prefWidth="258.0">
                <children>
                   <TextField fx:id="textFieldControl" layoutX="14.0" layoutY="182.0" prefHeight="25.0" prefWidth="222.0" />
                   <TextArea fx:id="textAreaControl" editable="false" layoutX="14.0" layoutY="47.0" prefHeight="127.0" prefWidth="222.0" />
                   <CheckBox fx:id="cmdControlButton" layoutX="41.0" layoutY="23.0" mnemonicParsing="false" text="CMD" />
                   <CheckBox fx:id="chatControlButton" layoutX="161.0" layoutY="23.0" mnemonicParsing="false" text="Chat" />
                   <Label layoutX="89.0" layoutY="6.0" text="Select mode: " />
+                  <Button fx:id="textControlExpandButton" ellipsisString="" layoutX="184.0" layoutY="125.0" mnemonicParsing="false" prefHeight="24.0" prefWidth="3.0" text="Button" />
                </children>
             </AnchorPane>
          </children>

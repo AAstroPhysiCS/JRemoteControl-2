@@ -35,7 +35,7 @@ public abstract class FeatureListener implements Listener<ClientEntity>, Dispose
     }
 
     @Override
-    public boolean call(ClientEntity e) {
+    public boolean listen(ClientEntity e) {
         reference.setObj(e);
         runningFeature = true;
         thread.execute(run(controller));

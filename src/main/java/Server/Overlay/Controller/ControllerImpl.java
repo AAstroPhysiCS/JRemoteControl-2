@@ -4,8 +4,10 @@ import Server.ClientEntity.Cell.ClientEntityCell;
 import Server.Overlay.MainFrame;
 import Tools.GraphicsConfigurator;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.TextInputControl;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
@@ -27,7 +29,7 @@ public class ControllerImpl extends Controller {
         GraphicsConfigurator.drawColor(cameraCaptureImageView, Color.LIGHT_GRAY);
     }
 
-    private void initEvents(){
+    private void initEvents() {
         audioCaptureButton.selectedProperty().addListener((observableValue, oldValue, newValue) -> audioCapturePane.setDisable(!newValue));
         desktopCaptureButton.selectedProperty().addListener((observableValue, oldValue, newValue) -> desktopCapturePane.setDisable(!newValue));
         cameraCaptureButton.selectedProperty().addListener((observableValue, oldValue, newValue) -> cameraCapturePane.setDisable(!newValue));
@@ -36,15 +38,16 @@ public class ControllerImpl extends Controller {
         listOfConnectableView.setCellFactory(e -> new ClientEntityCell<>(this));
         makeExpandable(cameraCaptureExpandButton, cameraCaptureImageView, cameraCaptureExpandImageView);
         makeExpandable(desktopCaptureExpandButton, desktopCaptureImageView, desktopCaptureExpandImageView);
+        makeExpandable(textControlExpandButton, textAreaControl, textAreaControlExpand);
     }
 
-    private void makeExpandable(Button button, ImageView imageView, ImageView expandImageView){
-        button.setVisible(false);
+    private void makeExpandable(Button button, Node node, Node expandNode) {
         button.setGraphic(new ImageView(MainFrame.class.getResource("/expandButton.png").toExternalForm()));
-        button.setOpacity(0.8d);
+        button.setOpacity(0.6d);
 
-        imageView.setOnMouseEntered(mouseEvent -> button.setVisible(true));
-        imageView.setOnMouseExited(mouseEvent -> button.setVisible(false));
+        button.setVisible(false);
+        node.setOnMouseEntered(mouseEvent -> button.setVisible(true));
+        node.setOnMouseExited(mouseEvent -> button.setVisible(false));
         button.setOnMouseEntered(mouseEvent -> button.setVisible(true));
         button.setOnMouseExited(mouseEvent -> button.setVisible(false));
 
@@ -52,12 +55,19 @@ public class ControllerImpl extends Controller {
             Group group = new Group();
             Scene scene = new Scene(group);
 
-            group.getChildren().add(expandImageView);
+            group.getChildren().add(expandNode);
 
             Stage stage = new Stage();
 
-            stage.widthProperty().addListener((observableValue, number, t1) -> expandImageView.setFitWidth((Double) t1));
-            stage.heightProperty().addListener((observableValue, number, t1) -> expandImageView.setFitHeight((Double) t1));
+            if (expandNode instanceof ImageView i) {
+                stage.widthProperty().addListener((observableValue, number, t1) -> i.setFitWidth((Double) t1));
+                stage.heightProperty().addListener((observableValue, number, t1) -> i.setFitHeight((Double) t1));
+            }
+
+            if (expandNode instanceof TextInputControl i) {
+                stage.widthProperty().addListener((observableValue, number, t1) -> i.setPrefWidth((Double) t1));
+                stage.widthProperty().addListener((observableValue, number, t1) -> i.setPrefHeight((Double) t1));
+            }
             stage.setScene(scene);
             stage.show();
         });

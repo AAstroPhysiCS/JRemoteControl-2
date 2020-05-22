@@ -2,6 +2,7 @@ package Server.ClientEntity;
 
 import Events.EventListener;
 import Server.Overlay.Controller.Controller;
+import Tools.Ref;
 
 import java.net.InetAddress;
 import java.util.Map;
@@ -39,9 +40,9 @@ public class ClientEntity {
     }
 
     public void setController(Controller controller){
-        event = new EventListener<>(controller,this) {
+        event = new EventListener<>(this) {
             @Override
-            public boolean call(ClientEntity e) {
+            public boolean listen(ClientEntity e) {
                 return controller.item == e;
             }
         };

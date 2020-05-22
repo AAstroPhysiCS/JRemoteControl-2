@@ -6,6 +6,14 @@ public class Ref<T> {
 
     public T obj;
 
+    public Ref(T obj){
+        this.obj = obj;
+    }
+
+    public Ref(){
+
+    }
+
     public void setObj(T obj) {
         this.obj = obj;
     }

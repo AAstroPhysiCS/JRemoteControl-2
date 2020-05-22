@@ -2,5 +2,5 @@ package Events;
 
 @FunctionalInterface
 public interface Listener<T> {
-    boolean call(T e);
+    boolean listen(T e);
 }

@@ -30,7 +30,7 @@ public class CameraCapture extends Feature {
         cam_Mat = new Mat();
     }
 
-    public void open() {
+    private void open() {
         boolean success = videoCapture.open(index);
         if (!success) throw new InternalError("Camera could not be opened!");
     }
@@ -61,6 +61,7 @@ public class CameraCapture extends Feature {
 
     @Override
     public void startFeature() {
+        open();
         if (!videoCapture.isOpened())
             throw new NullPointerException("Cam could not be opened!");
         running = true;
