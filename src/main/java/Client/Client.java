@@ -6,6 +6,7 @@ import Handler.ObjectHandler;
 import Handler.PacketHandler;
 import Tools.Network.NetworkInterface;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.SocketException;
@@ -16,13 +17,12 @@ import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import static Tools.IConstants.BUFFER_SIZE;
-
 public class Client extends NetworkInterface {
 
-    public static void main(String[] args) throws SocketException {
+    public static void main(String[] args) throws SocketException, ClassNotFoundException, UnsupportedLookAndFeelException, InstantiationException, IllegalAccessException {
         Client client = new Client(8000);
         Runtime.getRuntime().addShutdownHook(new Thread(client::disposeAll));
+        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
     }
 
     private static final ExecutorService threadListener = Executors.newSingleThreadScheduledExecutor();
@@ -35,7 +35,7 @@ public class Client extends NetworkInterface {
 
     private final CameraCapture cameraCapture;
 //    private final AudioCapture audioCapture = new AudioCapture();
-//    private final Chat chat = new Chat();
+    private final Chat chat;
     private final CMDControl cmdControl;
     private final DesktopCapture desktopCapture;
 
@@ -48,6 +48,7 @@ public class Client extends NetworkInterface {
         cameraCapture = new CameraCapture(0, new PacketHandler(socket, address, PORT));
         desktopCapture = new DesktopCapture(new PacketHandler(socket, address, PORT));
         cmdControl = new CMDControl(new PacketHandler(socket, address, PORT));
+        chat = new Chat(new PacketHandler(socket, address, PORT));
 
         threadListener.execute(listener());
     }
@@ -114,10 +115,9 @@ public class Client extends NetworkInterface {
                         case CommandByte.CMDCONTROL_BYTE_STOP -> cmdControl.stopFeature();
                         case CommandByte.DESKTOPCONTROL_BYTE -> desktopCapture.startFeature();
                         case CommandByte.DESKTOPCONTROL_BYTE_STOP -> desktopCapture.stopFeature();
-//                        case CommandByte.CHAT_BYTE -> chat.startFeature();
-                        case CommandByte.STOP_BYTE -> {
-                            break outer;
-                        }
+                        case CommandByte.CHAT_BYTE -> chat.startFeature();
+                        case CommandByte.CHAT_BYTE_STOP -> chat.stopFeature();
+                        case CommandByte.STOP_CONNECTION_BYTE -> { break outer; }
                     }
                 } catch (IOException e) {
                     e.printStackTrace();

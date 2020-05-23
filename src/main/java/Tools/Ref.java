@@ -11,7 +11,6 @@ public class Ref<T> {
     }
 
     public Ref(){
-
     }
 
     public void setObj(T obj) {

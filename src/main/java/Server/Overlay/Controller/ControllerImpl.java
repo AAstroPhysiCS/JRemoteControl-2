@@ -65,8 +65,12 @@ public class ControllerImpl extends Controller {
             }
 
             if (expandNode instanceof TextInputControl i) {
-                stage.widthProperty().addListener((observableValue, number, t1) -> i.setPrefWidth((Double) t1));
-                stage.widthProperty().addListener((observableValue, number, t1) -> i.setPrefHeight((Double) t1));
+                i.setEditable(false);
+                stage.setWidth(600);
+                stage.setHeight(500);
+                stage.setResizable(false);
+                i.setPrefWidth(580);
+                i.setPrefHeight(460);
             }
             stage.setScene(scene);
             stage.show();

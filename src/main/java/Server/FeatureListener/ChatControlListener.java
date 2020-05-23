@@ -13,26 +13,25 @@ import java.io.IOException;
 
 import static Tools.Network.NetworkInterface.Sleep;
 
-public class CMDControlListener extends FeatureListener {
+public class ChatControlListener extends FeatureListener {
 
     private String input = "", output = "";
     private ClientEntity selectedClient;
 
-    public CMDControlListener(Controller controller, Server server) {
+    public ChatControlListener(Controller controller, Server server) {
         super(controller, server);
     }
 
     @Override
     protected Runnable run(Controller controller) {
         return () -> {
-            while (runningFeature) {
-
+            while (runningFeature){
                 Sleep(1000 / 60);
 
-                String[] splitted = input.split(" ");
-                Message<String[]> stringToBytes = () -> splitted;
+                String i = input;
+                Message<String> stringToBytes = () -> i;
                 byte[] data = objectHandler.writeObjects(stringToBytes);
-                byte[] dataModified = objectHandler.writeModifiedArray(data, NetworkInterface.CommandByte.CMDCONTROL_BYTE);
+                byte[] dataModified = objectHandler.writeModifiedArray(data, NetworkInterface.CommandByte.CHAT_BYTE);
                 if (selectedClient != null) {
                     try {
                         packetHandler.send(dataModified, dataModified.length, selectedClient.getAddress(), selectedClient.getPort());
@@ -43,7 +42,7 @@ public class CMDControlListener extends FeatureListener {
 
                 byte[] buffer = server.getBuffer();
 
-                if (buffer == null || buffer[0] == 0 || buffer[0] != NetworkInterface.CommandByte.CMDCONTROL_BYTE)
+                if (buffer == null || buffer[0] == 0 || buffer[0] != NetworkInterface.CommandByte.CHAT_BYTE)
                     continue;
 
                 Message<String> currentInfo = (Message<String>) objectHandler.readModifiedObjects(buffer);
@@ -59,7 +58,7 @@ public class CMDControlListener extends FeatureListener {
 
     @Override
     protected void initComponents(Ref<ClientEntity> selectedClientSup) {
-        controller.cmdControlButton.selectedProperty().addListener((observableValue, oldValue, newValue) -> {
+        controller.chatControlButton.selectedProperty().addListener((observableValue, oldValue, newValue) -> {
             controller.textFieldControl.setOnKeyPressed(actionEvent -> {
                 if (actionEvent.getCode() == KeyCode.ENTER) {
                     controller.textAreaControl.appendText(controller.textFieldControl.getText() + "\n");
@@ -70,14 +69,14 @@ public class CMDControlListener extends FeatureListener {
             selectedClient = selectedClientSup.obj;
             if (newValue && selectedClient != null) {
                 try {
-                    packetHandler.send(new byte[]{NetworkInterface.CommandByte.CMDCONTROL_BYTE}, 1, selectedClient.getAddress(), selectedClient.getPort());
+                    packetHandler.send(new byte[]{NetworkInterface.CommandByte.CHAT_BYTE}, 1, selectedClient.getAddress(), selectedClient.getPort());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
             if (oldValue && selectedClient != null) {
                 try {
-                    packetHandler.send(new byte[]{NetworkInterface.CommandByte.CMDCONTROL_BYTE_STOP}, 1, selectedClient.getAddress(), selectedClient.getPort());
+                    packetHandler.send(new byte[]{NetworkInterface.CommandByte.CHAT_BYTE_STOP}, 1, selectedClient.getAddress(), selectedClient.getPort());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -87,7 +86,6 @@ public class CMDControlListener extends FeatureListener {
 
     @Override
     public void disposeAll() {
-        runningFeature = false;
-        thread.shutdown();
+
     }
 }

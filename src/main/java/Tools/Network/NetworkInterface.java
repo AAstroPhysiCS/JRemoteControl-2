@@ -30,7 +30,7 @@ public abstract class NetworkInterface implements Disposeable {
         public static final byte AUDIOCAPTURE_BYTE_STOP = (byte) 0x15;
         public static final byte CONFIRMATION_BYTE = (byte) 0x07;
         public static final byte INFO_ACHIEVED_BYTE = (byte) 0x08;
-        public static final byte STOP_BYTE = (byte)0x10;
+        public static final byte STOP_CONNECTION_BYTE = (byte)0x10;
     }
 
     public NetworkInterface(final int PORT) {
