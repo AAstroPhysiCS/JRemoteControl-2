@@ -25,32 +25,31 @@ public class ChatControlListener extends FeatureListener {
     @Override
     protected Runnable run(Controller controller) {
         return () -> {
-            while (runningFeature){
+            while (runningFeature) {
                 Sleep(1000 / 60);
 
-                String i = input;
-                Message<String> stringToBytes = () -> i;
-                byte[] data = objectHandler.writeObjects(stringToBytes);
-                byte[] dataModified = objectHandler.writeModifiedArray(data, NetworkInterface.CommandByte.CHAT_BYTE);
-                if (selectedClient != null) {
-                    try {
-                        packetHandler.send(dataModified, dataModified.length, selectedClient.getAddress(), selectedClient.getPort());
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                final String i = input;
+                if (!i.isBlank()) {
+                    Message<String> stringToBytes = () -> i;
+                    byte[] data = objectHandler.writeObjects(stringToBytes);
+                    byte[] dataModified = objectHandler.writeModifiedArray(data, NetworkInterface.CommandByte.CHAT_BYTE);
+                    if (selectedClient != null) {
+                        try {
+                            packetHandler.send(dataModified, dataModified.length, selectedClient.getAddress(), selectedClient.getPort());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
-
                 byte[] buffer = server.getBuffer();
 
-                if (buffer == null || buffer[0] == 0 || buffer[0] != NetworkInterface.CommandByte.CHAT_BYTE)
-                    continue;
+                if (buffer == null || buffer[0] == 0 || buffer[0] != NetworkInterface.CommandByte.CHAT_BYTE) continue;
 
                 Message<String> currentInfo = (Message<String>) objectHandler.readModifiedObjects(buffer);
-                if (currentInfo.get() instanceof String s) {
+                if (currentInfo.get() instanceof String s)
                     output = s;
-                }
-                controller.textAreaControl.appendText("--------------------RESPONSE--------------------\n" + output);
-                controller.textAreaControlExpand.appendText("--------------------RESPONSE--------------------\n" + output);
+                controller.textAreaControl.appendText(selectedClient.getId() + " said: " + output + "\n");
+                controller.textAreaControlExpand.appendText(selectedClient.getId() + " said: " + output + "\n");
                 server.resetBuffer();
             }
         };
