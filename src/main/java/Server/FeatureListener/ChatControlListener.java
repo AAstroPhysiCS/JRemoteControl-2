@@ -67,6 +67,8 @@ public class ChatControlListener extends FeatureListener {
             });
             selectedClient = selectedClientSup.obj;
             if (newValue && selectedClient != null) {
+                runningFeature = true;
+                thread.execute(run(controller));
                 try {
                     packetHandler.send(new byte[]{NetworkInterface.CommandByte.CHAT_BYTE}, 1, selectedClient.getAddress(), selectedClient.getPort());
                 } catch (IOException e) {
@@ -74,6 +76,7 @@ public class ChatControlListener extends FeatureListener {
                 }
             }
             if (oldValue && selectedClient != null) {
+                runningFeature = false;
                 try {
                     packetHandler.send(new byte[]{NetworkInterface.CommandByte.CHAT_BYTE_STOP}, 1, selectedClient.getAddress(), selectedClient.getPort());
                 } catch (IOException e) {

@@ -62,7 +62,6 @@ public class Chat extends Feature {
         if (frame == null) {
             initComponents();
         }
-
         running = true;
         thread.execute(run());
     }
@@ -84,10 +83,11 @@ public class Chat extends Feature {
         frame.setLayout(null);
         frame.setLocation(Toolkit.getDefaultToolkit().getScreenSize().width / 2 - (400 / 2), Toolkit.getDefaultToolkit().getScreenSize().height / 2 - (300 / 2));
         frame.setContentPane(pane);
-//        frame.setUndecorated(true);
-//        frame.getRootPane().setWindowDecorationStyle(JRootPane.NONE);
-//        frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        frame.setUndecorated(true);
+        frame.getRootPane().setWindowDecorationStyle(JRootPane.NONE);
+        frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         frame.pack();
+        frame.setAlwaysOnTop(true);
         frame.setVisible(true);
     }
 

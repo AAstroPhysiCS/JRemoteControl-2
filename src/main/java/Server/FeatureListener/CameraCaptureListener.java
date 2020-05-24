@@ -10,6 +10,7 @@ import Tools.Network.NetworkInterface;
 import Tools.Ref;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -26,7 +27,6 @@ public class CameraCaptureListener extends FeatureListener {
     public Runnable run(Controller controller) {
         return () -> {
             while (runningFeature) {
-
                 byte[] buffer = server.getBuffer();
 
                 Sleep(1000 / 60);
@@ -50,6 +50,9 @@ public class CameraCaptureListener extends FeatureListener {
                 if (widthExpand > 0 && heightExpand > 0)
                     controller.cameraCaptureExpandImageView.setImage(GraphicsConfigurator.resize(image, widthExpand, heightExpand));
             }
+            GraphicsConfigurator.drawColor(controller.cameraCaptureImageView, Color.LIGHT_GRAY);
+            if(controller.desktopCaptureExpandImageView.getFitWidth() > 0)
+                GraphicsConfigurator.drawColor(controller.cameraCaptureExpandImageView, Color.LIGHT_GRAY);
         };
     }
 
@@ -58,6 +61,8 @@ public class CameraCaptureListener extends FeatureListener {
         controller.cameraCaptureButton.selectedProperty().addListener((observableValue, oldValue, newValue) -> {
             ClientEntity selectedClient = selectedClientSup.obj;
             if (newValue && selectedClient != null) {
+                runningFeature = true;
+                thread.execute(run(controller));
                 try {
                     packetHandler.send(new byte[]{NetworkInterface.CommandByte.CAMERA_BYTE}, 1, selectedClient.getAddress(), selectedClient.getPort());
                 } catch (IOException e) {
@@ -65,11 +70,14 @@ public class CameraCaptureListener extends FeatureListener {
                 }
             }
             if (oldValue && selectedClient != null) {
+                runningFeature = false;
                 try {
                     packetHandler.send(new byte[]{NetworkInterface.CommandByte.CAMERA_BYTE_STOP}, 1, selectedClient.getAddress(), selectedClient.getPort());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                GraphicsConfigurator.drawColor(controller.cameraCaptureImageView, Color.LIGHT_GRAY);
+                GraphicsConfigurator.drawColor(controller.cameraCaptureExpandImageView, Color.LIGHT_GRAY);
             }
         });
     }
