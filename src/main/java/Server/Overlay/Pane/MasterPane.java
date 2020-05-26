@@ -59,6 +59,11 @@ public class MasterPane implements Disposeable {
 
     @Override
     public void disposeAll() {
+        cameraCaptureListener.disposeAll();
+        desktopCaptureListener.disposeAll();
+        cmdControlListener.disposeAll();
+        audioControlListener.disposeAll();
+        chatControlListener.disposeAll();
         scheduledExecutorService.shutdown();
     }
 }

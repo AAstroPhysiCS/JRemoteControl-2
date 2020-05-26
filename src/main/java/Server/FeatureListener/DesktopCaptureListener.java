@@ -15,7 +15,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
-import static Tools.Network.NetworkInterface.Sleep;
+import static Tools.Globals.Sleep;
 
 public class DesktopCaptureListener extends FeatureListener {
 

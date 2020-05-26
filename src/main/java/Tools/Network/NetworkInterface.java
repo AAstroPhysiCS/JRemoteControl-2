@@ -28,6 +28,7 @@ public abstract class NetworkInterface implements Disposeable {
         public static final byte DESKTOPCONTROL_BYTE_STOP = (byte) 0x12;
         public static final byte AUDIOCAPTURE_BYTE = (byte) 0x05;
         public static final byte AUDIOCAPTURE_BYTE_STOP = (byte) 0x15;
+        public static final byte AUDIOCAPTURE_INFO_STOP = (byte) 0x16;
         public static final byte CONFIRMATION_BYTE = (byte) 0x07;
         public static final byte INFO_ACHIEVED_BYTE = (byte) 0x08;
         public static final byte STOP_CONNECTION_BYTE = (byte)0x10;
@@ -38,14 +39,6 @@ public abstract class NetworkInterface implements Disposeable {
         try {
             address = InetAddress.getByName(hostName);
         } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static void Sleep(long time) {
-        try {
-            Thread.sleep(time);
-        } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }

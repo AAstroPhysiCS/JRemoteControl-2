@@ -10,8 +10,8 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-import static Tools.IConstants.BUFFER_SIZE;
-import static Tools.Network.NetworkInterface.Sleep;
+import static Tools.Globals.BUFFER_SIZE;
+import static Tools.Globals.Sleep;
 
 public class Chat extends Feature {
 

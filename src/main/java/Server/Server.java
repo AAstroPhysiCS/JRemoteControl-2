@@ -14,7 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static Tools.IConstants.BUFFER_SIZE;
+import static Tools.Globals.BUFFER_SIZE;
+import static Tools.Globals.Sleep;
 
 public class Server extends NetworkInterface {
 
@@ -49,7 +50,7 @@ public class Server extends NetworkInterface {
                     if (!socket.isClosed())
                         buffer = clientPacketHandler.receive(BUFFER_SIZE);
 
-                    if (buffer.length == 0 || objectHandler.readModifiedObjects(buffer) instanceof Message) continue;
+                    if (buffer.length == 0 || buffer[0] == 0 || objectHandler.readModifiedObjects(buffer) instanceof Message) continue;
 
                     Message<?> currentInfo = objectHandler.readObjects(buffer);
                     if(currentInfo == null) continue;

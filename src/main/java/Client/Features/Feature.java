@@ -10,7 +10,7 @@ import java.util.concurrent.Executors;
 
 public abstract class Feature implements Disposeable {
 
-    protected final ExecutorService thread = Executors.newSingleThreadScheduledExecutor();
+    protected final ExecutorService thread = Executors.newFixedThreadPool(2);
     protected boolean running = false;
 
     protected final ObjectHandler<Message<?>> objectHandler;

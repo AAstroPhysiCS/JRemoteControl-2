@@ -27,9 +27,7 @@ public abstract class Controller implements Initializable {
     public CheckBox desktopCaptureButton, cameraCaptureButton, audioCaptureButton, textControlButton, cmdControlButton, chatControlButton;
 
     @FXML
-    public TextField textFieldControl;
-
-    public TextField textFieldControlExpand = new TextField();
+    public TextField textFieldControl, audioCapturingTime;
 
     @FXML
     public AnchorPane desktopCapturePane, cameraCapturePane, audioCapturePane, textControlPane, controlPane;
@@ -41,7 +39,7 @@ public abstract class Controller implements Initializable {
     public Label statusLabel;
 
     @FXML
-    public Button cameraCaptureExpandButton, desktopCaptureExpandButton, textControlExpandButton;
+    public Button cameraCaptureExpandButton, desktopCaptureExpandButton, textControlExpandButton, audioCapturingConf;
 
     public ClientEntity item;
 

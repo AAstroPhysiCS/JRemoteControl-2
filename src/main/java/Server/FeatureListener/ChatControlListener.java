@@ -11,7 +11,7 @@ import javafx.scene.input.KeyCode;
 
 import java.io.IOException;
 
-import static Tools.Network.NetworkInterface.Sleep;
+import static Tools.Globals.Sleep;
 
 public class ChatControlListener extends FeatureListener {
 

@@ -15,7 +15,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
-import static Tools.Network.NetworkInterface.Sleep;
+import static Tools.Globals.Sleep;
 
 public class CameraCaptureListener extends FeatureListener {
 
@@ -76,8 +76,6 @@ public class CameraCaptureListener extends FeatureListener {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                GraphicsConfigurator.drawColor(controller.cameraCaptureImageView, Color.LIGHT_GRAY);
-                GraphicsConfigurator.drawColor(controller.cameraCaptureExpandImageView, Color.LIGHT_GRAY);
             }
         });
     }

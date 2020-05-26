@@ -21,6 +21,19 @@ public class ObjectHandler<V extends Message<?>> {
         return arrNew;
     }
 
+    public byte[][] spliceArray(byte[] arr, int levelOfSplice){
+        byte[][] multArr = new byte[levelOfSplice][arr.length/levelOfSplice];
+        int ptr = 0;
+        for(int i = 0; i < arr.length/levelOfSplice; i++){
+            System.out.println(multArr[ptr].length + " " + arr.length);
+            if(multArr[ptr].length == arr.length / levelOfSplice)
+                ptr++;
+            if(ptr == levelOfSplice) break;
+            multArr[ptr][i] = arr[i];
+        }
+        return multArr;
+    }
+
     public byte[] writeObjects(V obj) {
         return ObjectSerialization.serialize(obj);
     }
