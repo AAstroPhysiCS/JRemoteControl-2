@@ -31,7 +31,7 @@ public class CameraCaptureListener extends FeatureListener {
 
                 Sleep(1000 / 60);
 
-                if (buffer == null || buffer[0] == 0 || buffer[0] != NetworkInterface.CommandByte.CAMERA_BYTE) continue;
+                if (buffer == null ||  buffer[0] != NetworkInterface.CommandByte.CAMERA_BYTE) continue;
 
                 Message<byte[]> currentInfo = (Message<byte[]>) objectHandler.readModifiedObjects(buffer);
                 BufferedImage image = null;

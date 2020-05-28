@@ -60,8 +60,8 @@ public class Client extends NetworkInterface {
         return () -> {
             try {
                 String value = String.valueOf(id);
-                Message<String[]> info = () -> new String[]{String.valueOf(CommandByte.START_BYTE), value};
-                byte[] infoData = Objects.requireNonNull(clientObjectHandler.writeObjects(info));
+                Message<String> info = () -> value;
+                byte[] infoData = clientObjectHandler.writeModifiedArray(Objects.requireNonNull(clientObjectHandler.writeObjects(info)), CommandByte.START_BYTE);
                 packetHandler.send(infoData, infoData.length, address, PORT);
                 byte[] dataReceived = packetHandler.receive(1, packetHandler.getPacketAddress(), packetHandler.getPacketPort());
                 if (dataReceived[0] == CommandByte.CONFIRMATION_BYTE) {

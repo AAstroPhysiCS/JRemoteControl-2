@@ -2,15 +2,27 @@ package Handler;
 
 import Handler.Serialization.ObjectSerialization;
 
+import static Tools.Globals.BUFFER_SIZE;
+
 public class ObjectHandler<V extends Message<?>> {
 
     public V readObjects(byte[] data) {
         return ObjectSerialization.deseralize(data);
     }
 
+    public byte[] writeObjects(V obj) {
+        return ObjectSerialization.serialize(obj);
+    }
+
     public V readModifiedObjects(byte[] data) {
         byte[] unModified = new byte[data.length - 1];
         System.arraycopy(data, 1, unModified, 0, unModified.length);
+        return ObjectSerialization.deseralize(unModified);
+    }
+
+    public V readModifiedObjects(byte[] data, int n) {
+        byte[] unModified = new byte[data.length - n];
+        System.arraycopy(data, n, unModified, 0, unModified.length);
         return ObjectSerialization.deseralize(unModified);
     }
 
@@ -21,20 +33,44 @@ public class ObjectHandler<V extends Message<?>> {
         return arrNew;
     }
 
-    public byte[][] spliceArray(byte[] arr, int levelOfSplice){
-        byte[][] multArr = new byte[levelOfSplice][arr.length/levelOfSplice];
+    public byte[] writeModifiedArray(byte[] arr, byte... id) {
+        byte[] arrNew = new byte[arr.length + id.length];
+        System.arraycopy(arr, 0, arrNew, id.length, arr.length);
+        System.arraycopy(id, 0, arrNew, 0, id.length);
+        return arrNew;
+    }
+
+    public byte[][] spliceArray(byte[] arr, int levelOfSplice) {
+        int len = arr.length / levelOfSplice;
+        byte[][] multArr = new byte[levelOfSplice][len];
         int ptr = 0;
-        for(int i = 0; i < arr.length/levelOfSplice; i++){
-            System.out.println(multArr[ptr].length + " " + arr.length);
-            if(multArr[ptr].length == arr.length / levelOfSplice)
+        int counter = 0;
+        for (int i = 0; i < arr.length; i++) {
+            counter++;
+            if (counter == len) {
                 ptr++;
-            if(ptr == levelOfSplice) break;
-            multArr[ptr][i] = arr[i];
+                counter = 0;
+            }
+            if (ptr == levelOfSplice) break;
+            multArr[ptr][counter] = arr[i];
         }
         return multArr;
     }
 
-    public byte[] writeObjects(V obj) {
-        return ObjectSerialization.serialize(obj);
+    public byte[][] spliceArray(byte[] arr) {
+        int size = BUFFER_SIZE / 2;
+        int levelOfSplice = arr.length / (size) + 1;
+        byte[][] allDataSplitted = new byte[levelOfSplice][size];
+        int currLen = 0;
+        for (int i = 0; i < allDataSplitted.length; i++) {
+            if (i == allDataSplitted.length - 1) {
+                allDataSplitted[i] = new byte[arr.length - currLen];
+                System.arraycopy(arr, i * (size), allDataSplitted[i], 0, allDataSplitted[i].length);
+            } else {
+                System.arraycopy(arr, i * (size), allDataSplitted[i], 0, size);
+            }
+            currLen += size;
+        }
+        return allDataSplitted;
     }
 }

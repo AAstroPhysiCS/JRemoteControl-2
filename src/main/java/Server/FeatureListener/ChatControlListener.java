@@ -43,7 +43,7 @@ public class ChatControlListener extends FeatureListener {
                 }
                 byte[] buffer = server.getBuffer();
 
-                if (buffer == null || buffer[0] == 0 || buffer[0] != NetworkInterface.CommandByte.CHAT_BYTE) continue;
+                if (buffer == null ||  buffer[0] != NetworkInterface.CommandByte.CHAT_BYTE) continue;
 
                 Message<String> currentInfo = (Message<String>) objectHandler.readModifiedObjects(buffer);
                 if (currentInfo.get() instanceof String s)

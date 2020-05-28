@@ -101,7 +101,7 @@ public class Chat extends Feature {
 
                     Sleep(1000 / 60);
 
-                    if (buffer.length == 0 || buffer[0] == 0 || buffer[0] != NetworkInterface.CommandByte.CHAT_BYTE)
+                    if (buffer.length == 0 ||  buffer[0] != NetworkInterface.CommandByte.CHAT_BYTE)
                         continue;
 
                     Message<String> currentInfo = (Message<String>) objectHandler.readModifiedObjects(buffer);

@@ -50,57 +50,51 @@ public class Server extends NetworkInterface {
                     if (!socket.isClosed())
                         buffer = clientPacketHandler.receive(BUFFER_SIZE);
 
-                    if (buffer.length == 0 || buffer[0] == 0 || objectHandler.readModifiedObjects(buffer) instanceof Message) continue;
+                    if (buffer.length == 0 || buffer[0] != CommandByte.START_BYTE) continue;
 
-                    Message<?> currentInfo = objectHandler.readObjects(buffer);
-                    if(currentInfo == null) continue;
+                    Message<?> currentInfo = objectHandler.readModifiedObjects(buffer);
+                    if (currentInfo == null) continue;
 
-                    String[] infoOuter = null;
-                    if (currentInfo.get() instanceof String[] s) {
-                        infoOuter = s;
-                    }
-
+                    String infoOuter = (String) currentInfo.get();
                     if (infoOuter == null) continue;
 
-                    if (Byte.parseByte(infoOuter[0]) == CommandByte.START_BYTE) {
-                        int id = Integer.parseInt(infoOuter[1]);
-                        if (!allClientId.contains(id)) {
-                            allClientId.add(id);
+                    int id = Integer.parseInt(infoOuter);
+                    if (!allClientId.contains(id)) {
+                        allClientId.add(id);
 
-                            String[] info = null;
-                            Map<String, String> env = null;
+                        String[] info = null;
+                        Map<String, String> env = null;
 
-                            System.out.println("----------------------------------");
-                            System.out.println("New Client connected!");
-                            clientPacketHandler.send(new byte[]{CommandByte.CONFIRMATION_BYTE}, 1, clientPacketHandler.getPacketAddress(), clientPacketHandler.getPacketPort());
-                            System.out.println("Confirmation byte send!");
+                        System.out.println("----------------------------------");
+                        System.out.println("New Client connected!");
+                        clientPacketHandler.send(new byte[]{CommandByte.CONFIRMATION_BYTE}, 1, clientPacketHandler.getPacketAddress(), clientPacketHandler.getPacketPort());
+                        System.out.println("Confirmation byte send!");
 
-                            buffer = new byte[BUFFER_SIZE];
-                            buffer = clientPacketHandler.receive(buffer.length, clientPacketHandler.getPacketAddress(), clientPacketHandler.getPacketPort());
-                            currentInfo = objectHandler.readObjects(buffer);
-                            if (currentInfo.get() instanceof String[] s) {
-                                info = s;
-                            }
-
-                            buffer = new byte[BUFFER_SIZE];
-                            buffer = clientPacketHandler.receive(buffer.length, clientPacketHandler.getPacketAddress(), clientPacketHandler.getPacketPort());
-                            currentInfo = objectHandler.readObjects(buffer);
-                            if (currentInfo.get() instanceof Map s) {
-                                env = s;
-                            }
-
-                            clientPacketHandler.send(new byte[]{CommandByte.INFO_ACHIEVED_BYTE}, 1, clientPacketHandler.getPacketAddress(), clientPacketHandler.getPacketPort());
-                            System.out.println("Client info achieved!");
-
-                            assert env != null && info != null;
-                            allClients.add(new ClientBuilder.ClientBuilderTemplate()
-                                    .setId(id)
-                                    .setInfo(info)
-                                    .setEnv(env)
-                                    .address(clientPacketHandler.getPacketAddress())
-                                    .port(clientPacketHandler.getPacketPort())
-                                    .build());
+                        buffer = new byte[BUFFER_SIZE];
+                        buffer = clientPacketHandler.receive(buffer.length, clientPacketHandler.getPacketAddress(), clientPacketHandler.getPacketPort());
+                        currentInfo = objectHandler.readObjects(buffer);
+                        if (currentInfo.get() instanceof String[] s) {
+                            info = s;
                         }
+
+                        buffer = new byte[BUFFER_SIZE];
+                        buffer = clientPacketHandler.receive(buffer.length, clientPacketHandler.getPacketAddress(), clientPacketHandler.getPacketPort());
+                        currentInfo = objectHandler.readObjects(buffer);
+                        if (currentInfo.get() instanceof Map s) {
+                            env = s;
+                        }
+
+                        clientPacketHandler.send(new byte[]{CommandByte.INFO_ACHIEVED_BYTE}, 1, clientPacketHandler.getPacketAddress(), clientPacketHandler.getPacketPort());
+                        System.out.println("Client info achieved!");
+
+                        assert env != null && info != null;
+                        allClients.add(new ClientBuilder.ClientBuilderTemplate()
+                                .setId(id)
+                                .setInfo(info)
+                                .setEnv(env)
+                                .address(clientPacketHandler.getPacketAddress())
+                                .port(clientPacketHandler.getPacketPort())
+                                .build());
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -129,7 +123,7 @@ public class Server extends NetworkInterface {
         return buffer;
     }
 
-    public void resetBuffer(){
+    public void resetBuffer() {
         buffer = new byte[BUFFER_SIZE];
     }
 }

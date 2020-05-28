@@ -41,7 +41,7 @@ public class CMDControl extends Feature {
 
                     Sleep(1000 / 60);
 
-                    if (buffer.length == 0 || buffer[0] == 0 || buffer[0] != NetworkInterface.CommandByte.CMDCONTROL_BYTE)
+                    if (buffer.length == 0 ||  buffer[0] != NetworkInterface.CommandByte.CMDCONTROL_BYTE)
                         continue;
 
                     String[] input = (String[]) objectHandler.readModifiedObjects(buffer).get();

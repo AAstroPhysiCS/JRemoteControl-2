@@ -43,7 +43,7 @@ public class CMDControlListener extends FeatureListener {
 
                 byte[] buffer = server.getBuffer();
 
-                if (buffer == null || buffer[0] == 0 || buffer[0] != NetworkInterface.CommandByte.CMDCONTROL_BYTE)
+                if (buffer == null ||  buffer[0] != NetworkInterface.CommandByte.CMDCONTROL_BYTE)
                     continue;
 
                 Message<String> currentInfo = (Message<String>) objectHandler.readModifiedObjects(buffer);
