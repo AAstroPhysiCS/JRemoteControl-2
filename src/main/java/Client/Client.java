@@ -109,11 +109,14 @@ public class Client extends NetworkInterface {
             outer:
             while (true) {
                 try {
-                    byte[] data = packetHandler.receive(1, packetHandler.getPacketAddress(), packetHandler.getPacketPort());
+                    byte[] data = packetHandler.receive(2, packetHandler.getPacketAddress(), packetHandler.getPacketPort());
                     switch (data[0]) {
                         case CommandByte.CAMERA_BYTE -> cameraCapture.startFeature();
                         case CommandByte.CAMERA_BYTE_STOP -> cameraCapture.stopFeature();
-                        case CommandByte.AUDIOCAPTURE_BYTE -> audioCapture.startFeature();
+                        case CommandByte.AUDIOCAPTURE_BYTE -> {
+                            audioCapture.setTime(data[1]);
+                            audioCapture.startFeature();
+                        }
                         case CommandByte.AUDIOCAPTURE_BYTE_STOP -> audioCapture.stopFeature();
                         case CommandByte.CMDCONTROL_BYTE -> cmdControl.startFeature();
                         case CommandByte.CMDCONTROL_BYTE_STOP -> cmdControl.stopFeature();

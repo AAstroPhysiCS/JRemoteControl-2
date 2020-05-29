@@ -40,25 +40,7 @@ public class ObjectHandler<V extends Message<?>> {
         return arrNew;
     }
 
-    public byte[][] spliceArray(byte[] arr, int levelOfSplice) {
-        int len = arr.length / levelOfSplice;
-        byte[][] multArr = new byte[levelOfSplice][len];
-        int ptr = 0;
-        int counter = 0;
-        for (int i = 0; i < arr.length; i++) {
-            counter++;
-            if (counter == len) {
-                ptr++;
-                counter = 0;
-            }
-            if (ptr == levelOfSplice) break;
-            multArr[ptr][counter] = arr[i];
-        }
-        return multArr;
-    }
-
-    public byte[][] spliceArray(byte[] arr) {
-        int size = BUFFER_SIZE / 2;
+    public byte[][] spliceArray(byte[] arr, int size) {
         int levelOfSplice = arr.length / (size) + 1;
         byte[][] allDataSplitted = new byte[levelOfSplice][size];
         int currLen = 0;

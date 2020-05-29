@@ -16,7 +16,7 @@ public abstract class Controller implements Initializable {
     public ImageView desktopCaptureExpandImageView = new ImageView();
 
     @FXML
-    public Slider volumeSlider;
+    public Slider volumeSlider, audioCaptureSlider;
 
     @FXML
     public TextArea textAreaControl;
@@ -36,10 +36,10 @@ public abstract class Controller implements Initializable {
     public ListView<ClientEntity> listOfConnectableView;
 
     @FXML
-    public Label statusLabel;
+    public Label statusLabel, audioCaptureSliderLabel;
 
     @FXML
-    public Button cameraCaptureExpandButton, desktopCaptureExpandButton, textControlExpandButton, audioCapturingConf;
+    public Button cameraCaptureExpandButton, desktopCaptureExpandButton, textControlExpandButton, audioCapturingConf, audioCaptureStart, audioCaptureStop;
 
     public ClientEntity item;
 

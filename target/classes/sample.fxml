@@ -34,27 +34,27 @@
                         <Font size="15.0" />
                      </font>
                   </Label>
-                  <Slider fx:id="audioCaptureSlider" layoutX="15.0" layoutY="59.0" prefHeight="17.0" prefWidth="177.0" showTickMarks="true" snapToTicks="true" />
-                  <Label fx:id="audioCaptureSliderLabel" layoutX="206.0" layoutY="71.0" text="0:00" />
-                  <Button fx:id="audioCaptureStart" layoutX="18.0" layoutY="88.0" maxHeight="44.0" maxWidth="94.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="48.0" style="-fx-font-size: 15;" text="⏵" textAlignment="CENTER" textOverrun="CLIP" wrapText="true">
+                  <Slider fx:id="audioCaptureSlider" layoutX="15.0" layoutY="59.0" max="0.0" prefHeight="17.0" prefWidth="177.0" showTickMarks="true" snapToTicks="true" />
+                  <Label fx:id="audioCaptureSliderLabel" layoutX="201.0" layoutY="63.0" text="0:00" />
+                  <Button fx:id="audioCaptureStart" layoutX="18.0" layoutY="97.0" maxHeight="44.0" maxWidth="94.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="48.0" style="-fx-font-size: 15;" text="⏵" textAlignment="CENTER" textOverrun="CLIP" wrapText="true">
                      <font>
                         <Font name="Arial Bold" size="15.0" />
                      </font>
                   </Button>
-                  <Button fx:id="audioCaptureStop" layoutX="79.0" layoutY="88.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="48.0" style="-fx-font-size: 15;" text="⏸" textOverrun="CLIP">
+                  <Button fx:id="audioCaptureStop" layoutX="80.0" layoutY="97.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="48.0" style="-fx-font-size: 15;" text="⏸" textOverrun="CLIP">
                      <font>
                         <Font name="Arial" size="15.0" />
                      </font>
                   </Button>
-                  <Label layoutX="22.0" layoutY="134.0" prefHeight="19.0" prefWidth="40.0" text="Folder:">
+                  <Label layoutX="22.0" layoutY="144.0" prefHeight="19.0" prefWidth="40.0" text="Folder:">
                      <font>
                         <Font size="13.0" />
                      </font>
                   </Label>
-                  <Button fx:id="audioCaptureSelectFolder" ellipsisString="" layoutX="79.0" layoutY="131.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="164.0" text="Select a folder" textOverrun="CLIP" />
-                  <Label fx:id="audioCaptureSelectedFolderLabel" layoutX="22.0" layoutY="165.0" text="Selected Folder: " />
+                  <Button fx:id="audioCaptureSelectFolder" ellipsisString="" layoutX="80.0" layoutY="141.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="164.0" text="Select a folder" textOverrun="CLIP" />
+                  <Label fx:id="audioCaptureSelectedFolderLabel" layoutX="18.0" layoutY="175.0" text="Selected Folder: " />
                   <Button fx:id="audioCapturingConf" layoutX="19.0" layoutY="6.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="95.0" text="Start capturing" />
-                  <TextField fx:id="audioCapturingTime" layoutX="136.0" layoutY="6.0" prefHeight="25.0" prefWidth="51.0" />
+                  <TextField fx:id="audioCapturingTime" layoutX="136.0" layoutY="6.0" prefHeight="25.0" prefWidth="51.0" text="0" />
                   <Label layoutX="191.0" layoutY="10.0" text="seconds" />
                </children>
             </AnchorPane>
