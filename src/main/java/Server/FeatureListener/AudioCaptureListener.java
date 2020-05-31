@@ -7,18 +7,22 @@ import Server.Server;
 import Tools.Network.NetworkInterface;
 import Tools.Ref;
 import javafx.application.Platform;
+import javafx.stage.DirectoryChooser;
 
 import javax.sound.sampled.*;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 
 import static Tools.Globals.Sleep;
+import static Tools.Globals.map;
 
 public class AudioCaptureListener extends FeatureListener {
 
-    private final List<byte[]> allRecordings = new ArrayList<>();
+    private final List<Byte> allRecordings = new ArrayList<>();
     private final Map<Integer, byte[]> recordingInBytes = new LinkedHashMap<>();
+
+    private static final AudioFormat format = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, 44100, 16, 2, 4, 44100, false);
+    private static AudioInputStream audioIn;
 
     private final DataLine.Info info = new DataLine.Info(Clip.class, format);
 
@@ -27,7 +31,7 @@ public class AudioCaptureListener extends FeatureListener {
     private byte time;
     private long totalTime;
 
-    private static final AudioFormat format = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, 44100, 16, 2, 4, 44100, false);
+    private byte[] allByteBuffer;
 
     public AudioCaptureListener(Controller controller, Server server) {
         super(controller, server);
@@ -63,8 +67,12 @@ public class AudioCaptureListener extends FeatureListener {
         server.resetBuffer();
 
         byte[] mainBuffer = sumBytes(recordingInBytes, size);
+        size = 0;
 
-        allRecordings.add(mainBuffer);
+        for (byte b : mainBuffer) allRecordings.add(b);
+
+        allByteBuffer = sumBytes(allRecordings);
+        audioIn = new AudioInputStream(new ByteArrayInputStream(allByteBuffer), format, allByteBuffer.length);
 
         Platform.runLater(() -> {
             long minutes = (totalTime % 3600 - totalTime % 3600 % 60) / 60;
@@ -85,17 +93,23 @@ public class AudioCaptureListener extends FeatureListener {
     private Runnable play() {
         return () -> {
             controller.audioCaptureSlider.setValue(0);
-            byte[] mainBuffer = sumBytes(allRecordings, size);
-            AudioInputStream audioIn = new AudioInputStream(new ByteArrayInputStream(mainBuffer), format, mainBuffer.length);
 
             try {
                 if (audioIn.getFormat().matches(format)) {
                     Clip clip = (Clip) AudioSystem.getLine(info);
+
                     clip.open(audioIn);
                     clip.start();
 
+                    FloatControl control = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+                    new Thread(() -> {
+                        while (clip.isOpen()) {
+                            control.setValue(map((int) controller.volumeSlider.getValue(), 0, 100, -10, 6));
+                        }
+                    }).start();
+
                     System.out.println("Playing!");
-                    Thread.sleep(time * 1000);
+                    Thread.sleep(totalTime * 1000);
 
                     clip.stop();
                     clip.close();
@@ -148,6 +162,21 @@ public class AudioCaptureListener extends FeatureListener {
                 }
             }).start();
         });
+
+        controller.audioCaptureSelectFolder.setOnAction(actionEvent -> {
+            DirectoryChooser directoryChooser = new DirectoryChooser();
+            File selectedFolder = directoryChooser.showDialog(controller.primaryStage);
+            controller.audioCapturePathLabel.setText("Selected Path: " + selectedFolder.getPath() + "\n" + "Exporting...");
+
+            try {
+                File file = new File(selectedFolder.getPath() + "/file(0).wav");
+                AudioSystem.write(audioIn, AudioFileFormat.Type.WAVE, file);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            controller.audioCapturePathLabel.setText("Selected Path: " + selectedFolder.getPath() + "\n" + "Exported!");
+        });
     }
 
     @Override
@@ -167,14 +196,10 @@ public class AudioCaptureListener extends FeatureListener {
         return mainBuffer;
     }
 
-    private byte[] sumBytes(List<byte[]> collection, int size) {
-        final byte[] mainBuffer = new byte[size];
-        int ptr = 0;
+    private byte[] sumBytes(List<Byte> collection) {
+        final byte[] mainBuffer = new byte[collection.size()];
         for (int i = 0; i < collection.size(); i++) {
-            for (int j = 0; j < collection.get(i).length; j++) {
-                if(ptr == mainBuffer.length) break;
-                mainBuffer[ptr++] = allRecordings.get(i)[j];
-            }
+            mainBuffer[i] = allRecordings.get(i);
         }
         return mainBuffer;
     }

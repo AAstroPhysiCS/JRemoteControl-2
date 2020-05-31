@@ -36,10 +36,10 @@ public abstract class Controller implements Initializable {
     public ListView<ClientEntity> listOfConnectableView;
 
     @FXML
-    public Label statusLabel, audioCaptureSliderLabel;
+    public Label statusLabel, audioCaptureSliderLabel, audioCapturePathLabel;
 
     @FXML
-    public Button cameraCaptureExpandButton, desktopCaptureExpandButton, textControlExpandButton, audioCapturingConf, audioCaptureStart, audioCaptureStop;
+    public Button cameraCaptureExpandButton, desktopCaptureExpandButton, textControlExpandButton, audioCapturingConf, audioCaptureStart, audioCaptureSelectFolder;
 
     public ClientEntity item;
 

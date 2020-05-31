@@ -27,6 +27,9 @@ public class ControllerImpl extends Controller {
 
         GraphicsConfigurator.drawColor(desktopCaptureImageView, Color.LIGHT_GRAY);
         GraphicsConfigurator.drawColor(cameraCaptureImageView, Color.LIGHT_GRAY);
+
+        volumeSlider.setMax(100);
+        volumeSlider.setMin(0);
     }
 
     private void initEvents() {
