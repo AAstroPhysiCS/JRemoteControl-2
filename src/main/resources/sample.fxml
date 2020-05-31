@@ -28,8 +28,8 @@
             </CheckBox>
             <AnchorPane fx:id="audioCapturePane" disable="true" layoutX="294.0" layoutY="51.0" prefHeight="206.0" prefWidth="254.0">
                <children>
-                  <Slider fx:id="volumeSlider" layoutX="148.0" layoutY="112.0" prefHeight="14.0" prefWidth="64.0" />
-                  <Label layoutX="155.0" layoutY="88.0" text="Volume">
+                  <Slider fx:id="volumeSlider" layoutX="95.0" layoutY="113.0" prefHeight="14.0" prefWidth="64.0" />
+                  <Label layoutX="102.0" layoutY="87.0" text="Volume">
                      <font>
                         <Font size="15.0" />
                      </font>
@@ -39,11 +39,6 @@
                   <Button fx:id="audioCaptureStart" layoutX="18.0" layoutY="97.0" maxHeight="44.0" maxWidth="94.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="48.0" style="-fx-font-size: 15;" text="⏵" textAlignment="CENTER" textOverrun="CLIP" wrapText="true">
                      <font>
                         <Font name="Arial Bold" size="15.0" />
-                     </font>
-                  </Button>
-                  <Button fx:id="audioCaptureStop" layoutX="80.0" layoutY="97.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="48.0" style="-fx-font-size: 15;" text="⏸" textOverrun="CLIP">
-                     <font>
-                        <Font name="Arial" size="15.0" />
                      </font>
                   </Button>
                   <Label layoutX="22.0" layoutY="144.0" prefHeight="19.0" prefWidth="40.0" text="Folder:">

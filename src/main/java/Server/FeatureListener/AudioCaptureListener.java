@@ -41,7 +41,7 @@ public class AudioCaptureListener extends FeatureListener {
 
                 Sleep(1000 / 60);
 
-                if (buffer[0] == NetworkInterface.CommandByte.AUDIOCAPTURE_INFO_STOP) playAudio();
+                if (buffer[0] == NetworkInterface.CommandByte.AUDIOCAPTURE_INFO_STOP) finalizeAudioData();
 
                 if (buffer[0] != NetworkInterface.CommandByte.AUDIOCAPTURE_BYTE) continue;
 
@@ -59,12 +59,13 @@ public class AudioCaptureListener extends FeatureListener {
         };
     }
 
-    private void playAudio() {
+    private void finalizeAudioData() {
         server.resetBuffer();
 
         byte[] mainBuffer = sumBytes(recordingInBytes, size);
 
         allRecordings.add(mainBuffer);
+
         Platform.runLater(() -> {
             long minutes = (totalTime % 3600 - totalTime % 3600 % 60) / 60;
             long seconds = totalTime % 3600 % 60;
@@ -74,7 +75,7 @@ public class AudioCaptureListener extends FeatureListener {
             controller.audioCaptureSlider.setMax(totalTime);
             controller.audioCaptureSlider.setMin(0);
             controller.audioCaptureSlider.setShowTickLabels(true);
-            controller.audioCaptureSlider.setMajorTickUnit(totalTime % 10);
+            controller.audioCaptureSlider.setMajorTickUnit(totalTime / 10f);
             controller.audioCaptureSlider.setBlockIncrement(1);
         });
         recordingInBytes.clear();
@@ -83,8 +84,10 @@ public class AudioCaptureListener extends FeatureListener {
 
     private Runnable play() {
         return () -> {
+            controller.audioCaptureSlider.setValue(0);
             byte[] mainBuffer = sumBytes(allRecordings, size);
             AudioInputStream audioIn = new AudioInputStream(new ByteArrayInputStream(mainBuffer), format, mainBuffer.length);
+
             try {
                 if (audioIn.getFormat().matches(format)) {
                     Clip clip = (Clip) AudioSystem.getLine(info);
@@ -139,7 +142,6 @@ public class AudioCaptureListener extends FeatureListener {
         controller.audioCaptureStart.setOnAction(actionEvent -> {
             new Thread(play()).start();
             new Thread(() -> {
-                Sleep(1000);
                 while (controller.audioCaptureSlider.getValue() != controller.audioCaptureSlider.getMax()) {
                     Sleep(1000);
                     controller.audioCaptureSlider.increment();
@@ -154,7 +156,7 @@ public class AudioCaptureListener extends FeatureListener {
         thread.shutdown();
     }
 
-    private byte[] sumBytes(Map<Integer, byte[]> collection, int size){
+    private byte[] sumBytes(Map<Integer, byte[]> collection, int size) {
         final byte[] mainBuffer = new byte[size];
         int ptr = 0;
         for (byte[] b : collection.values()) {
@@ -165,11 +167,12 @@ public class AudioCaptureListener extends FeatureListener {
         return mainBuffer;
     }
 
-    private byte[] sumBytes(List<byte[]> collection, int size){
+    private byte[] sumBytes(List<byte[]> collection, int size) {
         final byte[] mainBuffer = new byte[size];
         int ptr = 0;
-        for(int i = 0; i < collection.size(); i++){
-            for(int j = 0; j < collection.get(i).length; j++){
+        for (int i = 0; i < collection.size(); i++) {
+            for (int j = 0; j < collection.get(i).length; j++) {
+                if(ptr == mainBuffer.length) break;
                 mainBuffer[ptr++] = allRecordings.get(i)[j];
             }
         }
