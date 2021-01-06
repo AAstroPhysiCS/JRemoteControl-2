@@ -12,6 +12,6 @@ The purpose of this program is to allow to capture the victim's camera, desktop,
 
 ## Images
 
-<img align="right" src=https://github.com/AAstroPhysiCS/JRemoteControl-2/blob/master/images/1.PNG width="400px" height="313px">
+<img align="right" src=https://github.com/AAstroPhysiCS/JRemoteControl-2/blob/master/images/1.PNG width="400px" height="300px">
 
 <img align="left" src=https://github.com/AAstroPhysiCS/JRemoteControl-2/blob/master/images/Inked2_LI.jpg width="450px" height="300px">
